@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  position: relative;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: slatescale;
+  font-family: 'Inter', sans-serif;
+}
+
+body,
+html {
+  overflow: hidden;
+  margin: 0;
+  height: 100%;
+  font-size: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f6fa;
+}
+
+#root {
+  height: 100%;
+}
+
+button:disabled {
+  @apply shadow-none hover:shadow-none cursor-not-allowed active:bg-opacity-100;
+}
+
+input[type='number'].default::-webkit-outer-spin-button,
+input[type='number'].default::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input::placeholder {
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  font-size: 15px;
+  @apply text-black/70;
+}
+/* Fundo do scroll*/
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Barra do scroll */
+::-webkit-scrollbar-thumb {
+  background-color: silver;
+  border: 5px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+
+/* Barra do scroll */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+@media screen and (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 16px;
+  }
+}
+
+ul::-webkit-scrollbar-thumb {
+  background-color: silver;
+  border: 4px solid transparent;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+
+ul::-webkit-scrollbar {
+  width: 16px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  width: min-content;
+  max-width: 100%;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-zoom: none;
+  user-select: none;
+
+  @apply animate-fadeIn;
+}
+
+span,
+small,
+strong {
+  display: flex;
+  line-height: normal;
+}
+
+a {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-touch-callout: none !important;
+}
+
+.line-clamp-one {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: ltr;
+}
+
+.line-clamp-two {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.line-clamp-infinit {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  overflow: hidden;
+}
+
+.btn-scale {
+  @apply ease-in-out duration-200
+  leading-initial
+  active:scale-95 
+  disabled:active:scale-100;
+}
+
+.box {
+  border: 1px solid #dddfe2;
+  box-shadow: 4px 4px 4px 0px rgba(0, 0, 0, 0.02);
+}
+
+.number-category::after {
+  content: '';
+  width: 90%;
+  height: 2px;
+
+  position: absolute;
+  right: 1px;
+  bottom: -1px;
+  background: red;
+}
+
+select {
+  appearance: none;
+  background-image: url('/arrowdown.svg');
+  background-repeat: no-repeat;
+  background-position-x: 95%;
+  background-position-y: 9px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+}
+
+select:disabled {
+  @apply !text-gray-700;
+}
+
+.backdrop-blur-sm {
+  @apply fixed top-0 left-0;
+}
