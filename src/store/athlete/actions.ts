@@ -29,6 +29,10 @@ export function createSuccess(payload: createProps) {
   };
 }
 
+export function createFailure() {
+  return { type: athleteTypes.CREATE_FAILURE };
+}
+
 export function update(payload: updateProps) {
   return {
     type: athleteTypes.UPDATE_REQUEST,

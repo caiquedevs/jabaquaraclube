@@ -19,13 +19,16 @@ export function* fetchAthlete({ payload }: { payload: actions.fetchProps } & Act
 }
 
 export function* createAthlete({ payload }: { payload: actions.createProps } & Action): any {
-  yield tryCase(function* (): any {
+  try {
     const { data, callBack } = payload;
     const response = yield call(api.post, '/athlete', data);
 
     yield put(actions.createSuccess(response.data));
     if (callBack) callBack();
-  });
+  } catch (error: any) {
+    toast.warn(error.response?.data?.msg || 'Erro desconhecido');
+    yield put(actions.createFailure());
+  }
 }
 
 export function* updateAthlete({ payload }: { payload: actions.updateProps } & Action): any {

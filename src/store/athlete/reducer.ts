@@ -39,6 +39,12 @@ export function athleteReducer(state = initialState, action: any) {
       return newState;
     }
 
+    case athleteTypes.CREATE_FAILURE: {
+      const newState = { ...state };
+      newState.loading.create = false;
+      return newState;
+    }
+
     case athleteTypes.UPDATE_REQUEST: {
       const newState = { ...state };
       newState.loading.update = true;
