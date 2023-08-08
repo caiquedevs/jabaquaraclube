@@ -23,6 +23,7 @@ function* registerRequestSagas({ payload }: { payload: actions.RegisterRequestPr
     yield put(actions.registerFailure());
   }
 }
+
 export function* loginRequestSagas({ payload }: { payload: actions.LoginRequestProps } & Action): any {
   const { data, callBack } = payload;
 

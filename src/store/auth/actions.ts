@@ -1,5 +1,4 @@
 import { authTypes } from 'store/redux/types';
-import { Employee } from 'interfaces/employee';
 import { Auth } from 'interfaces/auth';
 
 export function registerRequest(payload: RegisterRequestProps) {
@@ -43,21 +42,21 @@ export function logoutUser() {
   };
 }
 
-export function setTempUser(payload: Partial<Employee>) {
-  return {
-    type: authTypes.SET_TEMP_USER,
-    payload,
-  };
-}
-
-export function setTempUserData(payload: TempUserData[]) {
-  return {
-    type: authTypes.SET_TEMP_USER_DATA,
-    payload,
-  };
-}
-
 // Interfaces actions ----------------------------
+export interface RegisterRequestProps {
+  callBack: (response: any) => void;
+  data: {
+    email: string;
+    name: string;
+    password: string;
+  };
+}
+
+export interface RegisterSucessProps {
+  token: string;
+  user: Auth;
+}
+
 export interface LoginRequestProps {
   callBack: () => void;
   data: Partial<Auth>;
@@ -77,24 +76,4 @@ export interface ChangeUserRequestProps {
 export interface ChangeUserSuccessProps {
   email?: string;
   password?: string;
-}
-
-export interface TempUserData {
-  id: string;
-  votesStepOne: string[];
-  votesStepTwo: string[];
-}
-
-export interface RegisterRequestProps {
-  callBack: (response: any) => void;
-  data: {
-    email: string;
-    name: string;
-    password: string;
-  };
-}
-
-export interface RegisterSucessProps {
-  token: string;
-  user: Auth;
 }

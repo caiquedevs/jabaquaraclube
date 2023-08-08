@@ -1,9 +1,20 @@
 import { Helmet } from 'react-helmet';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { isAndroid } from 'utils/constants';
 
+import * as actionsAuth from 'store/auth/actions';
+import * as actionsLog from 'store/actionLogs/actions';
+
+import React from 'react';
+import { useAppSelector } from 'hooks/useAppSelector';
+import { format } from 'date-fns';
+
 export function HomePage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { actionLogs, loading } = useAppSelector((state) => state.actionLogReducer);
 
   const bgLinear = 'linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(41, 24, 24, 0.56) 56.25%, #492A2A 100%)';
 
@@ -11,6 +22,16 @@ export function HomePage() {
     const url = event.currentTarget.getAttribute('data-route');
     navigate(url!);
   };
+
+  const handleClickLogout = (event: React.MouseEvent<HTMLButtonElement>) => {
+    dispatch(actionsAuth.logoutUser());
+  };
+
+  React.useEffect(() => {
+    if (actionLogs === null) dispatch(actionsLog.fetch({}));
+
+    return () => {};
+  }, []);
 
   return (
     <main className="w-full h-full pb-10 overflow-y-auto ">
@@ -83,7 +104,11 @@ export function HomePage() {
           </li>
 
           <li>
-            <button type="button" className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black">
+            <button
+              type="button"
+              onClick={handleClickLogout}
+              className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black"
+            >
               <img src="/exit.svg" alt="acesso icon" />
 
               <div className="flex flex-col gap-0.5">
@@ -97,12 +122,23 @@ export function HomePage() {
 
       <section style={{ gridTemplateColumns: '3fr 0.945fr' }} className="w-full h-full px-11 mt-9 grid gap-6">
         <div className="w-full h-full">
-          <span>Lista de presença</span>
-          <div className="box w-full h-full mt-4 bg-white rounded-t-lg"></div>
+          <span>Ações recentes</span>
+          <div className="box w-full h-full mt-4 bg-white rounded-t-lg">
+            {actionLogs?.map((action) => {
+              return (
+                <div className="flex gap-10">
+                  <span>{format(new Date(action.createdAt!), 'dd/MM/yyyy')}</span>
+                  <span>{format(new Date(action.createdAt!), 'HH:mm')}</span>
+                  <span>{action.user.email}</span>
+                  <span>{action.message}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="w-full h-full">
-          <span>Ações recentes</span>
+          <span>Lista de presença</span>
           <div className="box w-full h-full mt-4 bg-white rounded-t-lg"></div>
         </div>
       </section>

@@ -35,6 +35,7 @@ export type Athlete = {
 
   name: string;
   uri?: string;
+  oldUri?: string;
   photo?: File | null;
   category?: string;
   rg: string;

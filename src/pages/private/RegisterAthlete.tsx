@@ -13,11 +13,12 @@ import { useDispatch } from 'react-redux';
 
 import * as actionsAthlete from 'store/athlete/actions';
 import { toast } from 'react-toastify';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAppSelector } from 'hooks/useAppSelector';
+import { Mode } from 'interfaces/mode';
 
-const initialValues: Athlete = {
+const initialValues: Athlete & Mode = {
   name: '',
   photo: null,
   category: '',
@@ -25,6 +26,7 @@ const initialValues: Athlete = {
   cpf: '',
   dateBirth: '',
   email: '',
+  mode: 'create',
   isFederated: {
     clubName: '',
     date: '',
@@ -104,10 +106,13 @@ type Props = {};
 export function RegisterAthlete({}: Props) {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const formikRef = React.useRef<FormikProps<typeof initialValues>>(null);
 
   const { athletes, loading } = useAppSelector((state) => state.athleteReducer);
+
+  const [pageTitle, setPageTitle] = React.useState('');
 
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.currentTarget.files?.[0]) return;
@@ -118,7 +123,6 @@ export function RegisterAthlete({}: Props) {
     const name = event.currentTarget.getAttribute('data-value');
 
     if (name === 'certificateValidity.file') formikRef.current?.setFieldValue('certificateValidity.date', '');
-    if (name === 'photo') formikRef.current?.setFieldValue('uri', '');
     setTimeout(() => formikRef.current?.setFieldValue(name!, null), 0);
   };
 
@@ -177,7 +181,7 @@ export function RegisterAthlete({}: Props) {
     formikRef.current?.setFieldValue(name, value);
   };
 
-  const handleSubmit = (formikValues: Athlete) => {
+  const onCreate = (formikValues: Athlete & Mode) => {
     const values = structuredClone(formikValues);
     const formData = new FormData();
 
@@ -191,25 +195,53 @@ export function RegisterAthlete({}: Props) {
 
     const callBack = () => {
       toast.success('Atleta cadastrado com sucesso!');
-      formikRef.current?.resetForm();
-      document.querySelector('main')?.scrollTo(0, 0);
+      navigate('/athletes');
     };
 
     dispatch(actionsAthlete.create({ data: formData, callBack }));
+  };
+
+  const onUpdate = (formikValues: Athlete & Mode) => {
+    const values = structuredClone(formikValues);
+    const formData = new FormData();
+
+    formData.append('photo', values.photo!);
+    formData.append('certificate', values.certificateValidity.file!);
+
+    delete values.photo;
+    delete values.certificateValidity.file;
+
+    formData.append('data', JSON.stringify(values));
+
+    const callBack = () => {
+      toast.success('Dados atualizados com sucesso!', { toastId: 'update-athlete' });
+      navigate('/athletes');
+    };
+
+    dispatch(actionsAthlete.update({ data: formData, callBack }));
+  };
+
+  const handleSubmit = (formikValues: Athlete & Mode) => {
+    formikValues.mode === 'create' ? onCreate(formikValues) : onUpdate(formikValues);
   };
 
   React.useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const athleteId = queryParams.get('id');
 
-    const callBack = (data: Athlete[]) => {
-      formikRef.current?.setValues(data?.find((athlete) => athlete._id === athleteId) || initialValues);
+    const setUpdateData = (data: Athlete[]) => {
+      const result = data?.find((athlete) => athlete._id === athleteId);
+      if (!result) return toast.warning('Atleta não encontrado para edição!');
+
+      formikRef.current?.setValues(result);
+      formikRef.current?.setFieldValue('mode', 'update');
+      setPageTitle('Atualizar dados do Atleta');
     };
 
     if (athleteId) {
-      athletes === null
-        ? dispatch(actionsAthlete.fetch({ callBack }))
-        : formikRef.current?.setValues(athletes?.find((athlete) => athlete._id === athleteId) || initialValues);
+      athletes === null ? dispatch(actionsAthlete.fetch({ callBack: setUpdateData })) : setUpdateData(athletes);
+    } else {
+      setPageTitle('Registrar Atleta');
     }
 
     return () => {};
@@ -218,7 +250,7 @@ export function RegisterAthlete({}: Props) {
   return (
     <main className="w-full h-full py-9 overflow-y-auto">
       <Helmet>
-        <title>Registrar atleta</title>
+        <title>{pageTitle}</title>
       </Helmet>
 
       <ShowIf
@@ -258,6 +290,7 @@ export function RegisterAthlete({}: Props) {
         onSubmit={handleSubmit}
       >
         {({ values, errors }) => {
+          console.log('errors', errors);
           return (
             <Form className="w-full max-w-md mx-auto">
               <small className="mb-2 font-normal text-sm text-black/70">Cadastrar novo atleta</small>
@@ -269,28 +302,36 @@ export function RegisterAthlete({}: Props) {
                 </label>
 
                 <div className="mt-2 flex items-center gap-x-3">
-                  {values.photo || values.uri ? (
-                    <figure className="group/image w-12 h-12 flex items-center justify-center">
-                      <img
-                        src={
-                          values.photo
-                            ? URL.createObjectURL(values.photo!)
-                            : import.meta.env.VITE_API_URL + '/photos/' + values.uri
-                        }
-                        alt="foto do atleta"
-                        className="w-10 h-10 rounded-full"
-                      />
+                  <ShowIf
+                    as="figure"
+                    show={values.uri && !values.photo}
+                    className="group/image w-12 h-12 flex items-center justify-center"
+                  >
+                    <img
+                      src={import.meta.env.VITE_API_URL + '/photos/' + values.uri}
+                      alt="foto do atleta"
+                      className="w-10 h-10 rounded-full object-cover object-top"
+                    />
+                  </ShowIf>
 
-                      <button
-                        data-value="photo"
-                        type="button"
-                        onClick={handleRemoveFile}
-                        className="w-10 h-10 flex items-center justify-center rounded-full bg-black/50 absolute group-hover/image:opacity-100 opacity-0 duration-200"
-                      >
-                        <LiaTrashAlt className="text-white text-2xl" />
-                      </button>
-                    </figure>
-                  ) : (
+                  <ShowIf as="figure" show={values.photo} className="group/image w-12 h-12 flex items-center justify-center">
+                    <img
+                      src={values.photo ? URL.createObjectURL(values.photo) : ''}
+                      alt="foto do atleta"
+                      className="w-10 h-10 rounded-full object-cover object-top"
+                    />
+
+                    <button
+                      data-value="photo"
+                      type="button"
+                      onClick={handleRemoveFile}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-black/50 absolute group-hover/image:opacity-100 opacity-0 duration-200"
+                    >
+                      <LiaTrashAlt className="text-white text-2xl" />
+                    </button>
+                  </ShowIf>
+
+                  <ShowIf show={!values.photo && !values.uri}>
                     <svg className="h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path
                         fillRule="evenodd"
@@ -298,7 +339,7 @@ export function RegisterAthlete({}: Props) {
                         clipRule="evenodd"
                       />
                     </svg>
-                  )}
+                  </ShowIf>
 
                   <label>
                     <input type="file" name="photo" onChange={handleChangeFile} value={''} className="hidden" />
@@ -420,10 +461,16 @@ export function RegisterAthlete({}: Props) {
                       values.certificateValidity.file ? 'border-teal-500 bg-teal-100' : ''
                     }`}
                   >
-                    {values.certificateValidity.file ? (
-                      <div className="w-full h-full flex items-center jutify-center">
-                        <span className="line-clamp-one text-sm">{values.certificateValidity.file?.name}</span>
+                    <ShowIf
+                      as="div"
+                      show={values.certificateValidity.file || values.certificateValidity.uri}
+                      className="w-full h-full flex items-center jutify-center"
+                    >
+                      <span className="line-clamp-one text-sm">
+                        {values.certificateValidity.file?.name || values.certificateValidity.uri}
+                      </span>
 
+                      <ShowIf show={values.certificateValidity.file?.name}>
                         <button
                           data-value="certificateValidity.file"
                           type="button"
@@ -432,8 +479,10 @@ export function RegisterAthlete({}: Props) {
                         >
                           <LiaTrashAlt className="text-primary text-2xl" />
                         </button>
-                      </div>
-                    ) : (
+                      </ShowIf>
+                    </ShowIf>
+
+                    <ShowIf show={!values.certificateValidity.file?.name && values.certificateValidity.uri}>
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M12 3C8.91 3 6.48 5.3475 6.14025 8.34375C5.48673 8.44906 4.87385 8.7291 4.36646 9.15423C3.85908 9.57936 3.47608 10.1338 3.258 10.7587C1.413 11.2905 0 12.936 0 15C0 17.493 2.007 19.5 4.5 19.5H19.5C21.993 19.5 24 17.493 24 15C24 13.68 23.3587 12.498 22.4295 11.6715C22.2555 9.036 20.1532 6.933 17.508 6.7965C16.605 4.59975 14.5335 3 12 3ZM12 4.5C14.0715 4.5 15.7275 5.8275 16.3125 7.71L16.4775 8.25H17.25C19.3162 8.25 21 9.93375 21 12V12.375L21.3045 12.6097C21.672 12.8914 21.9706 13.253 22.1777 13.6671C22.3849 14.0812 22.4951 14.537 22.5 15C22.5 16.707 21.207 18 19.5 18H4.5C2.793 18 1.5 16.707 1.5 15C1.5 13.485 2.5875 12.309 3.96 12.0705L4.45275 11.9767L4.5465 11.4832C4.7715 10.473 5.667 9.75 6.75 9.75H7.5V9C7.5 6.4725 9.4725 4.5 12 4.5ZM12 8.6955L11.46 9.21075L8.46 12.2108L9.54 13.2908L11.25 11.5778V16.5H12.75V11.5778L14.46 13.2892L15.54 12.2092L12.54 9.20925L12 8.6955Z"
@@ -441,7 +490,7 @@ export function RegisterAthlete({}: Props) {
                           fillOpacity="0.4"
                         />
                       </svg>
-                    )}
+                    </ShowIf>
                   </div>
                 </label>
 
@@ -450,7 +499,7 @@ export function RegisterAthlete({}: Props) {
                     name="certificateValidity.date"
                     value={values.certificateValidity.date}
                     error={errors.certificateValidity?.date}
-                    disabled={!values.certificateValidity.file}
+                    disabled={!values.certificateValidity.file && !values.certificateValidity.uri}
                     onChange={handleChangeDate}
                     placeholder="Validade"
                   />
@@ -574,7 +623,11 @@ export function RegisterAthlete({}: Props) {
                 className="w-full h-13 mt-9 rounded-md bg-primary normal-case"
               >
                 <span className="w-max mx-auto font-medium text-base text-inherit">
-                  {loading.create || loading.update ? 'Salvando...' : 'Continuar'}
+                  {loading.create || loading.update
+                    ? 'Salvando...'
+                    : values.mode === 'create'
+                    ? 'Continuar'
+                    : 'Salvar alterações'}
                 </span>
               </Button>
             </Form>

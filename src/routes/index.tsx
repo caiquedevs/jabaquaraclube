@@ -1,16 +1,17 @@
 import { memo, ReactElement, useCallback } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import privateRoutes from './privateRoutes';
 import { Page404 } from 'pages/public/Page404';
+import { LoginPage } from 'pages/public/LoginPage';
 
 import IRoute from 'interfaces/route';
+import { useAppSelector } from 'hooks/useAppSelector';
 
 const RoutesAplication = (): ReactElement => {
   function PrivateRoute({ children }: any) {
-    // const { tempUser, isLoggedIn } = useSelector((state: RootReducer) => state.authReducer);
-    // if (!isLoggedIn) return <Navigate to="/login" />;
-    // else if (route.name !== 'userspage' && isEmpty(tempUser)) return <Navigate to="/users" />;
+    const { isLoggedIn } = useAppSelector((state) => state.authReducer);
+    if (!isLoggedIn) return <Navigate to="/login" />;
 
     return children;
   }
@@ -45,6 +46,7 @@ const RoutesAplication = (): ReactElement => {
   return (
     <Routes>
       <Route path="*" element={<Page404 />} />
+      <Route path="/login" element={<LoginPage />} />
       {privateRoutes.map(renderPrivateRoutes)}
     </Routes>
   );

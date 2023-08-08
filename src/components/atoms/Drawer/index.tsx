@@ -60,7 +60,7 @@ export function Drawer(props: Props) {
       onClose={closeDrawer}
       className="p-4 overflow-y-auto fixed top-0 right-0"
     >
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between" style={{ display: isOpen ? 'flex' : 'none' }}>
         <div className="w-full mt-2.5">{props.children(payloadDrawer)}</div>
       </div>
     </MaterialDrawer>

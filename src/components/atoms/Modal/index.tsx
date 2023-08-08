@@ -1,4 +1,5 @@
 import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from 'react';
+import { Button, Dialog, DialogHeader, DialogBody, DialogFooter } from '@material-tailwind/react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -38,15 +39,13 @@ function ModalComponent(props: PageProps, ref: ForwardedRef<ModalProps | undefin
   };
 
   const closeModal = () => {
-    containerRef.current!.style.transform = 'translateY(110%)';
-    backDropRef.current!.style.backgroundColor = 'transparent';
+    setPayloadModal(undefined);
+    setIsOpen(false);
 
-    setTimeout(() => {
-      setPayloadModal(undefined);
-      setIsOpen(false);
-      props.callBackClose?.();
-    }, 200);
+    props.callBackClose?.();
   };
+
+  const handleOpen = (value: any) => (value ? openModal() : closeModal());
 
   useImperativeHandle(
     ref,
@@ -61,22 +60,13 @@ function ModalComponent(props: PageProps, ref: ForwardedRef<ModalProps | undefin
   );
 
   if (!isOpen) return <></>;
-
+  {
+    props.children(payloadModal);
+  }
   return (
-    <div>
-      <button
-        ref={backDropRef}
-        type="button"
-        onClick={closeModal}
-        className="w-full h-full fixed top-0 left-0 bg-black/80 animate-fadeIn cursor-default duration-200"
-      />
-
-      <div className="w-auto fixed inset-0 overflow-y-auto">
-        <div className="w-auto flex min-h-full items-center justify-center lg:p-4 pb-0 text-center">
-          {props.children(payloadModal)}
-        </div>
-      </div>
-    </div>
+    <Dialog open={isOpen} size="xs" handler={handleOpen} className="!p-0">
+      <DialogBody>{props.children(payloadModal)}</DialogBody>
+    </Dialog>
   );
 }
 export default forwardRef(ModalComponent);

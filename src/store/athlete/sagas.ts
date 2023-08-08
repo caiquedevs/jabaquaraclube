@@ -6,6 +6,7 @@ import { athleteTypes } from 'store/redux/types';
 
 import * as actions from './actions';
 import { tryCase } from 'utils/tryCase';
+import { toast } from 'react-toastify';
 
 export function* fetchAthlete({ payload }: { payload: actions.fetchProps } & Action): any {
   yield tryCase(function* (): any {
@@ -27,7 +28,31 @@ export function* createAthlete({ payload }: { payload: actions.createProps } & A
   });
 }
 
+export function* updateAthlete({ payload }: { payload: actions.updateProps } & Action): any {
+  yield tryCase(function* (): any {
+    const { data, callBack } = payload;
+    const response = yield call(api.put, '/athlete', data);
+
+    yield put(actions.updateSuccess(response.data));
+    if (callBack) callBack();
+  });
+}
+
+export function* removeAthlete({ payload }: { payload: actions.removeProps } & Action): any {
+  yield tryCase(function* (): any {
+    const { data, callBack } = payload;
+    const response = yield call(api.post, '/remove-athlete', data);
+
+    toast.success('Atleta removido com sucesso!');
+
+    yield put(actions.removeSuccess(response.data));
+    if (callBack) callBack();
+  });
+}
+
 export default all([
   takeLatest(athleteTypes.FETCH_REQUEST, fetchAthlete),
   takeLatest(athleteTypes.CREATE_REQUEST, createAthlete),
+  takeLatest(athleteTypes.UPDATE_REQUEST, updateAthlete),
+  takeLatest(athleteTypes.REMOVE_REQUEST, removeAthlete),
 ]);

@@ -73,6 +73,6 @@ export interface updateProps {
 }
 
 export interface removeProps {
-  id: string;
+  data: Athlete;
   callBack?: () => void;
 }
