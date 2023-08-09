@@ -50,7 +50,7 @@ export function LoginPage() {
   }, []);
 
   return (
-    <main className="w-full h-full py-10 flex flex-col items-center desk:justify-center desk:bg-none bg-[url('bg-mobile.jpg')] bg-no-repeat bg-cover overflow-y-auto ">
+    <main className="w-full h-full py-10 flex flex-col items-center desk:justify-center desk:bg-none bg-[url('/bg-mobile.jpg')] bg-no-repeat bg-cover overflow-y-auto ">
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ values }) => {
           return (
