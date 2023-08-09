@@ -11,7 +11,7 @@ import { useAppSelector } from 'hooks/useAppSelector';
 const RoutesAplication = (): ReactElement => {
   function PrivateRoute({ children }: any) {
     const { isLoggedIn } = useAppSelector((state) => state.authReducer);
-    if (!isLoggedIn) return <Navigate to="/login" />;
+    if (!isLoggedIn) return <Navigate to="/" />;
 
     return children;
   }
@@ -46,7 +46,7 @@ const RoutesAplication = (): ReactElement => {
   return (
     <Routes>
       <Route path="*" element={<Page404 />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<LoginPage />} />
       {privateRoutes.map(renderPrivateRoutes)}
     </Routes>
   );

@@ -9,7 +9,7 @@ export function AcessPage({}: Props) {
         <section style={{ maxWidth: '1016px' }} className="w-full h-full mx-auto">
           <div className="w-full flex items-center justify-between pt-10 pb-7">
             <div className="flex items-center">
-              <Link to="/" className="absolute -left-12 mb-0.5">
+              <Link to="/home" className="absolute -left-12 mb-0.5">
                 <svg width="36" height="31" viewBox="0 0 36 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M9.12418 15.5L8.56129 14.9715L8 15.5L8.56129 16.0285L9.12418 15.5ZM9.68706 16.0285L16.0473 10.057L14.9216 9L8.56129 14.9715L9.68706 16.0285ZM8.56129 16.0285L14.9216 22L16.0473 20.943L9.68706 14.9715L8.56129 16.0285ZM9.12418 16.2464L29 16.2464L29 14.7536L9.12418 14.7536L9.12418 16.2464Z"

@@ -8,7 +8,7 @@ import { RegisterAthlete } from 'pages/private/RegisterAthlete';
 const routes: IRoute[] = [
   {
     icon: null,
-    path: '/',
+    path: '/home',
     name: 'homepage',
     isPrivate: true,
     component: HomePage,

@@ -35,7 +35,7 @@ export function LoginPage() {
   };
 
   const callbackLogin = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   const handleSubmit = (values: typeof initialValues) => {
