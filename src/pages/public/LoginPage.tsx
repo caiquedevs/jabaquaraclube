@@ -39,67 +39,66 @@ export function LoginPage() {
   };
 
   const handleSubmit = (values: typeof initialValues) => {
-    if (!captcha) toast.warn('ReCAPTCHA inválido!');
-    else dispatch(actionsLogin.loginRequest({ callBack: callbackLogin, data: values }));
+    // if (!captcha) toast.warn('ReCAPTCHA inválido!');
+    // else
+    dispatch(actionsLogin.loginRequest({ callBack: callbackLogin, data: values }));
   };
 
+  React.useEffect(() => {
+    dispatch({ type: 'RESET_LOADINGS' });
+    return () => {};
+  }, []);
+
   return (
-    <main className="w-full h-full overflow-y-auto flex flex-col lg:items-center lg:justify-center">
+    <main className="w-full h-full py-10 flex flex-col items-center desk:justify-center desk:bg-none bg-[url('bg-mobile.jpg')] bg-no-repeat bg-cover overflow-y-auto ">
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ values }) => {
           return (
-            <Form style={{ height: 'calc(100% - 60px)' }} className="w-full max-w-lg lg:!h-auto">
-              <div className="box min-w-full max-w-full h-full pt-14 pb-12 px-12 justify-between rounded-xl bg-white ">
-                <div>
-                  <header className="mb-7">
-                    <h1 className="font-changa font-semibold text-3xl text-black/80 mb-1.5">Entrar</h1>
-                    <p className="text-base text-black/60">Preencha os campos abaixo para prosseguir</p>
-                  </header>
+            <Form className="w-full h-full desk:h-auto desk:max-w-max px-8 desk:px-0">
+              <div className="w-full h-full flex flex-col">
+                <header className="w-full pt-7 mb-7 flex flex-col desk:items-center">
+                  <img src="logo.png" alt="logo" className="hidden desk:flex" />
 
-                  <div className="flex flex-col gap-5">
-                    <label>
-                      <span className="mb-2">Email</span>
-                      <Input
-                        placeholder="Informe seu Email"
-                        type="email"
-                        name="email"
-                        required={true}
-                        value={values.email}
-                        className="w-full py-6"
-                      />
-                    </label>
-
-                    <label>
-                      <span className="mb-2">Email</span>
-                      <Input
-                        placeholder="Informe sua Senha"
-                        type="password"
-                        autoComplete="new-password"
-                        name="password"
-                        required={true}
-                        value={values.password}
-                        minLength={8}
-                        className="w-full py-6"
-                      />
-                    </label>
+                  <div className="desk:hidden">
+                    <h1 className="font-changa font-semibold text-5xl text-[#da251c]">
+                      Bem vindo <br /> de volta
+                    </h1>
+                    <p className="mt-4 text-lg text-white">Faça login para continuar</p>
                   </div>
+                </header>
 
-                  <div className="mt-5 flex items-center gap-2">
-                    <input type="checkbox" name="persist" id="persist" checked disabled className="w-4 h-4 text-lg" />
-                    <span className="font-roboto font-normal text-sm text-black/50 leading-4">Lembre-se de mim</span>
-                  </div>
+                <div className="w-full mt-11 desk:mt-0 flex flex-col gap-3">
+                  <Input
+                    placeholder="Informe seu Email"
+                    type="email"
+                    name="email"
+                    required={true}
+                    value={values.email}
+                    className="w-full desk:py-6 py-8 bg-slate-700 text-white border-transparent desk:border-slate-300 placeholder:text-white/60 placeholder:text-lg desk:bg-white desk:text-black/80 desk:placeholder:text-base desk:placeholder:text-black/60"
+                  />
+
+                  <Input
+                    placeholder="Informe sua Senha"
+                    type="password"
+                    autoComplete="new-password"
+                    name="password"
+                    required={true}
+                    value={values.password}
+                    minLength={8}
+                    className="w-full desk:py-6 py-8 bg-slate-700 text-white border-transparent desk:border-slate-300 placeholder:text-white/60 placeholder:text-lg desk:bg-white desk:text-black/80 desk:placeholder:text-base desk:placeholder:text-black/60"
+                  />
                 </div>
 
-                <div className="w-max mt-8">
+                {/* <div className="w-full mt-4" style={{ transform: 'scale(1.5)', transformOrigin: '0 0' }}>
                   <ReCAPTCHA sitekey={RECAPTCHA_KEY} onChange={handleChangeCaptcha} />
-                </div>
+                </div> */}
 
-                <footer className="mt-9 flex flex-col gap-5">
+                <footer className="w-full mt-9 flex flex-col gap-5 absolute desk:relative bottom-0">
                   <Button
                     type="submit"
                     loading={loading.login}
-                    disabled={loading.login || !captcha}
-                    className="w-full py-3 bg-primary font-normal normal-case text-base rounded-md"
+                    // disabled={loading.login || !captcha}
+                    className="w-full py-5 desk:py-3 bg-[#da251c] font-normal normal-case text-xl desk:text-base rounded-md"
                   >
                     {loading.login ? 'Entrando...' : 'Entrar'}
                   </Button>

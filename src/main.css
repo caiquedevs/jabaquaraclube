@@ -165,8 +165,8 @@ select {
   background-image: url('/arrowdown.svg');
   background-color: #ffffff;
   background-repeat: no-repeat;
-  background-position-x: 95%;
-  background-position-y: 9px;
+  background-position-x: calc(100% - 16px);
+  background-position-y: 50%;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
 }

@@ -38,8 +38,8 @@ export function Input({ error, className, type, ...props }: InputProps) {
 
             {type === 'password' ? (
               <button type="button" onClick={onTooglePassword} className="btn-scale absolute right-4 z-10">
-                {tooglePassword ? <RiEyeCloseLine className={`text-xl text-black/50`} /> : null}
-                {!tooglePassword ? <RiEyeLine className={`text-xl text-black/50`} /> : null}
+                {tooglePassword ? <RiEyeCloseLine className={`text-xl text-white desk:text-black/50`} /> : null}
+                {!tooglePassword ? <RiEyeLine className={`text-xl text-white desk:text-black/50`} /> : null}
               </button>
             ) : null}
           </div>

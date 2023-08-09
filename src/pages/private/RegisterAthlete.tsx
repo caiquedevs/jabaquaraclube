@@ -284,7 +284,10 @@ export function RegisterAthlete({}: Props) {
         </svg>
       </ShowIf>
 
-      <Link to="/athletes" className="w-max flex items-center justify-start gap-2 fixed left-8">
+      <Link
+        to="/athletes"
+        className="w-max pl-5 mb-7 desk:mb-0 desk:pl-0 flex items-center justify-start gap-2 desk:fixed desk:left-8"
+      >
         <MdArrowBackIosNew className="text-xl text-black" />
         <span className="font-roboto font-normal text-base text-black leading-initial">Voltar</span>
       </Link>
@@ -299,7 +302,7 @@ export function RegisterAthlete({}: Props) {
       >
         {({ values, errors }) => {
           return (
-            <Form className="w-full max-w-md mx-auto">
+            <Form className="w-full max-w-md mx-auto px-7">
               <small className="mb-2 font-normal text-sm text-black/70">Cadastrar novo atleta</small>
               <h1 className="font-changa font-semibold text-xl text-black/70">Informe os dados para cadastrar um novo atleta</h1>
 
@@ -312,34 +315,43 @@ export function RegisterAthlete({}: Props) {
                   <ShowIf
                     as="figure"
                     show={values.uri && !values.photo}
-                    className="group/image w-12 h-12 flex items-center justify-center"
+                    className="group/image w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center"
                   >
                     <img
                       src={import.meta.env.VITE_S3_URL + values.uri}
                       alt="foto do atleta"
-                      className="w-10 h-10 rounded-full object-cover object-top"
+                      className="w-full h-full rounded-full object-cover object-top"
                     />
                   </ShowIf>
 
-                  <ShowIf as="figure" show={values.photo} className="group/image w-12 h-12 flex items-center justify-center">
+                  <ShowIf
+                    as="figure"
+                    show={values.photo}
+                    className="group/image w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center"
+                  >
                     <img
                       src={values.photo ? URL.createObjectURL(values.photo) : ''}
                       alt="foto do atleta"
-                      className="w-10 h-10 rounded-full object-cover object-top"
+                      className="w-20 h-20 desk:w-12 desk:h-12 rounded-full object-cover object-top"
                     />
 
                     <button
                       data-value="photo"
                       type="button"
                       onClick={handleRemoveFile}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-black/50 absolute group-hover/image:opacity-100 opacity-0 duration-200"
+                      className="w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center rounded-full bg-black/50 absolute group-hover/image:opacity-100 opacity-0 duration-200"
                     >
                       <LiaTrashAlt className="text-white text-2xl" />
                     </button>
                   </ShowIf>
 
                   <ShowIf show={!values.photo && !values.uri}>
-                    <svg className="h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <svg
+                      className="w-20 h-20 desk:w-12 desk:h-12 text-gray-300"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
                       <path
                         fillRule="evenodd"
                         d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
@@ -364,18 +376,18 @@ export function RegisterAthlete({}: Props) {
                 </div>
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr' }} className="mt-5">
+              <fieldset className="mt-5 grid-cols-1">
                 <Input
                   type="text"
                   name="name"
                   value={values.name}
                   error={errors.name}
                   placeholder="Nome completo"
-                  className="capitalize"
+                  className="capitalize py-8 desk:py-6"
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="rg"
@@ -384,7 +396,10 @@ export function RegisterAthlete({}: Props) {
                   onPaste={onPasteRg}
                   onChange={handleChangeRg}
                   placeholder="RG"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
+
                 <Input
                   type="text"
                   name="cpf"
@@ -392,6 +407,8 @@ export function RegisterAthlete({}: Props) {
                   error={errors.cpf}
                   onChange={handleChangeCpf}
                   placeholder="CPF"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
               </fieldset>
 
@@ -403,6 +420,8 @@ export function RegisterAthlete({}: Props) {
                   error={errors.dateBirth}
                   onChange={handleChangeDate}
                   placeholder="Data de nascimento"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
 
                 <Input
@@ -410,7 +429,7 @@ export function RegisterAthlete({}: Props) {
                   name="category"
                   error={errors.category}
                   value={values.category} // Use a propriedade `value` em vez de `selected`
-                  className={values.category === '' ? '!text-black/70' : 'text-black'}
+                  className={`h-[66px] desk:h-13  ${values.category === '' ? '!text-black/70' : 'text-black'}`}
                 >
                   <option className="hidden">Categoria</option>
                   <option value="s11">S11</option>
@@ -421,13 +440,14 @@ export function RegisterAthlete({}: Props) {
                 </Input>
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="isFederated.clubName"
                   onChange={handleChangeFederation}
                   value={values.isFederated.clubName}
                   placeholder="Clube de Federação"
+                  className="py-8 desk:py-6"
                 />
 
                 <Input
@@ -438,17 +458,19 @@ export function RegisterAthlete({}: Props) {
                   disabled={!values.isFederated.clubName}
                   onChange={handleChangeYear}
                   placeholder="Ano"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="school.name"
                   value={values.school.name}
                   onChange={handleChangeSchool}
                   placeholder="Nome da escola"
-                  className="capitalize"
+                  className="capitalize py-8 desk:py-6"
                 />
 
                 <Input
@@ -456,7 +478,7 @@ export function RegisterAthlete({}: Props) {
                   name="school.period"
                   value={values.school.period}
                   disabled={!values.school.name}
-                  className={values.school.period === '' ? '!text-black/70' : 'text-black'}
+                  className={`h-[66px] desk:h-13 ${values.school.period === '' ? '!text-black/70' : 'text-black'}`}
                 >
                   <option className="hidden">Período</option>
                   <option value="manha">Manhã</option>
@@ -465,8 +487,8 @@ export function RegisterAthlete({}: Props) {
                 </Input>
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-7 grid gap-2.5 items-end">
-                <label className="overflow-hidden pb-6">
+              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-2">
+                <label className="overflow-hidden pb-[2px] desk:pb-[18px]">
                   <input
                     type="file"
                     name="certificateValidity.file"
@@ -475,10 +497,11 @@ export function RegisterAthlete({}: Props) {
                     accept=".pdf, .jpg, .jpeg, .png"
                     className="hidden"
                   />
+
                   <span className="mb-2.5 font-normal text-sm text-black">Atestado médico</span>
 
                   <div
-                    className={`w-full h-11 px-3 rounded-base border border-dashed border-slate-400 flex items-center justify-center cursor-pointer ${
+                    className={`w-full h-[66px] desk:h-13 px-3 rounded-base border border-dashed border-slate-400 flex items-center justify-center cursor-pointer ${
                       values.certificateValidity.file ? 'border-teal-500 bg-teal-100' : ''
                     }`}
                   >
@@ -523,11 +546,13 @@ export function RegisterAthlete({}: Props) {
                     disabled={!values.certificateValidity.file && !values.certificateValidity.uri}
                     onChange={handleChangeDate}
                     placeholder="Validade"
+                    className="py-8 desk:py-6"
+                    inputMode="numeric"
                   />
                 </div>
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-2 grid gap-2.5 items-end">
+              <fieldset className="mt-5 desk:mt-2 grid gap-2.5 items-end grid-cols-1 desk:grid-cols-2">
                 <label>
                   <span className="mb-2.5 font-normal text-sm text-black">Contato</span>
 
@@ -536,7 +561,7 @@ export function RegisterAthlete({}: Props) {
                     name="mother.name"
                     value={values.mother.name}
                     placeholder="Nome da mãe"
-                    className="capitalize"
+                    className="capitalize py-8 desk:py-6"
                   />
                 </label>
 
@@ -546,16 +571,18 @@ export function RegisterAthlete({}: Props) {
                   error={errors.mother?.phone}
                   onChange={handleChangePhone}
                   placeholder="Contato da mãe"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="father.name"
                   value={values.father.name}
                   placeholder="Nome do pai"
-                  className="capitalize"
+                  className="capitalize py-8 desk:py-6"
                 />
 
                 <Input
@@ -564,11 +591,21 @@ export function RegisterAthlete({}: Props) {
                   error={errors.father?.phone}
                   onChange={handleChangePhone}
                   placeholder="Contato do pai"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
               </fieldset>
 
               <fieldset className="mt-3">
-                <Input type="email" name="email" value={values.email} error={errors.email} placeholder="Email" />
+                <Input
+                  type="email"
+                  name="email"
+                  value={values.email}
+                  error={errors.email}
+                  placeholder="Email"
+                  className="py-8 desk:py-6"
+                  inputMode="email"
+                />
               </fieldset>
 
               <fieldset style={{ gridTemplateColumns: '1fr' }} className="mt-7 grid gap-2.5 items-end">
@@ -581,6 +618,7 @@ export function RegisterAthlete({}: Props) {
                     error={errors.address?.road}
                     value={values.address.road}
                     placeholder="Rua"
+                    className="py-8 desk:py-6"
                   />
                 </label>
               </fieldset>
@@ -591,7 +629,9 @@ export function RegisterAthlete({}: Props) {
                   name="address.number"
                   error={errors.address?.number}
                   value={values.address.number}
-                  placeholder="Numero da residência"
+                  placeholder="Numero"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
                 <Input
                   type="text"
@@ -600,6 +640,8 @@ export function RegisterAthlete({}: Props) {
                   error={errors.address?.cep}
                   onChange={handleChangeCep}
                   placeholder="CEP"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
                 />
               </fieldset>
 
@@ -641,7 +683,7 @@ export function RegisterAthlete({}: Props) {
               <Button
                 type="submit"
                 loading={loading.create || loading.update}
-                className="w-full h-13 mt-9 rounded-md bg-primary normal-case"
+                className="w-full h-16 desk:h-13 mt-9 rounded-md bg-primary normal-case"
               >
                 <span className="w-max mx-auto font-medium text-base text-inherit">
                   {loading.create || loading.update

@@ -105,6 +105,13 @@ module.exports = withMT({
         pushBottom: 'pushBottom 0.2s ease-out',
       },
       gridTemplateColumns: {},
+      backgroundImage: {
+        'bg-mobile': "url('bg-mobile.jpg')",
+      },
+      screens: {
+        mobile: '900px',
+        desk: '901px',
+      },
     },
   },
 });

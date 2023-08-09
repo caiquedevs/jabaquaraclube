@@ -94,6 +94,12 @@ export function authReducer(state = initialState, action: any) {
       return newState;
     }
 
+    case 'RESET_LOADINGS': {
+      const newState = { ...state };
+      newState.loading = { login: false, create: false, update: false, remove: false };
+      return newState;
+    }
+
     default: {
       return state;
     }

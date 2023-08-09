@@ -34,14 +34,14 @@ export function HomePage() {
   }, []);
 
   return (
-    <main className="w-full h-full pb-10 overflow-y-auto ">
+    <main className="w-full h-full pb-10 overflow-y-auto">
       <Helmet>
         <title>Jabaquara Atlético Clube</title>
       </Helmet>
 
       <header
         style={{ backgroundImage: "url('/bg-jhc.jpg')", backgroundPositionY: '18%' }}
-        className="w-full h-72 px-11 flex flex-col justify-center bg-no-repeat bg-cover"
+        className="w-full h-72 px-11 flex-col justify-center bg-no-repeat bg-cover hidden desk:flex"
       >
         <div style={{ backgroundImage: bgLinear }} className="w-full h-full absolute top-0 left-0" />
 
@@ -51,22 +51,29 @@ export function HomePage() {
         </div>
       </header>
 
-      <section className="w-full px-11 -mt-14">
-        <span className="mb-2 text-white text-lg">Escolha uma opção</span>
+      <section className="w-full px-7 desk:px-11 desk:-mt-14">
+        <span className="mb-2 text-white text-lg hidden desk:flex">Escolha uma opção</span>
 
-        <ul className="grid grid-cols-4 gap-6">
+        <div className="mt-11 mb-6 text-xl text-black/80 block desk:hidden">
+          <p>Escolha uma das</p>
+          <p className="flex items-center gap-1.5">
+            opções <strong className="text-primary">Abaixo</strong>
+          </p>
+        </div>
+
+        <ul className="flex flex-col desk:grid grid-cols-4 gap-3 desk:gap-6">
           <li>
             <button
               type="button"
               data-route="/athletes"
               onClick={handleClickNavigate}
-              className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black"
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-white border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/atleta.svg" alt="atleta icon" />
 
               <div className="flex flex-col gap-0.5">
-                <strong className="font-semibold text-sm">Atletas</strong>
-                <small className="font-normal text-xs">Gerenciar atletas</small>
+                <strong className="font-semibold text-lg desk:text-sm">Atletas</strong>
+                <small className="font-normal text-base desk:text-xs">Gerenciar atletas</small>
               </div>
             </button>
           </li>
@@ -75,14 +82,15 @@ export function HomePage() {
             <button
               type="button"
               data-route="/categories"
+              disabled={true}
               onClick={handleClickNavigate}
-              className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black"
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-slate-200 border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/categories.svg" alt="categorias icon" />
 
               <div className="flex flex-col gap-0.5">
-                <strong className="font-semibold text-sm">Categorias</strong>
-                <small className="font-normal text-xs">Gerenciar categorias</small>
+                <strong className="font-semibold text-lg desk:text-sm">Categorias</strong>
+                <small className="font-normal text-base desk:text-xs">Em breve...</small>
               </div>
             </button>
           </li>
@@ -91,14 +99,30 @@ export function HomePage() {
             <button
               type="button"
               data-route="/access"
+              disabled={true}
               onClick={handleClickNavigate}
-              className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black"
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-slate-200 border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/key.svg" alt="chave icon" />
 
               <div className="flex flex-col gap-0.5">
-                <strong className="font-semibold text-sm">Acessos</strong>
-                <small className="font-normal text-xs">Gerenciar acessos</small>
+                <strong className="font-semibold text-lg desk:text-sm">Acessos</strong>
+                <small className="font-normal text-base desk:text-xs">Em breve...</small>
+              </div>
+            </button>
+          </li>
+
+          <li className="block desk:hidden">
+            <button
+              type="button"
+              onClick={handleClickLogout}
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-slate-200 border-2 border-black cursor-default desk:cursor-pointer"
+            >
+              <img src="/presenceList.svg" alt="lista icon" />
+
+              <div className="flex flex-col gap-0.5">
+                <strong className="font-semibold text-lg desk:text-sm">Lista de presença</strong>
+                <small className="font-normal text-base desk:text-xs">Em breve...</small>
               </div>
             </button>
           </li>
@@ -107,39 +131,32 @@ export function HomePage() {
             <button
               type="button"
               onClick={handleClickLogout}
-              className="box w-full py-4 px-6 rounded-lg flex gap-5 bg-white border-2 border-black"
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-white border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/exit.svg" alt="acesso icon" />
 
               <div className="flex flex-col gap-0.5">
-                <strong className="font-semibold text-sm">Sair</strong>
-                <small className="font-normal text-xs">Sair do sistema</small>
+                <strong className="font-semibold text-lg desk:text-sm">Sair</strong>
+                <small className="font-normal text-base desk:text-xs">Sair do sistema</small>
               </div>
             </button>
           </li>
         </ul>
       </section>
 
-      <section style={{ gridTemplateColumns: '3fr 0.945fr' }} className="w-full h-full px-11 mt-9 grid gap-6">
-        <div className="w-full h-full">
-          <span>Ações recentes</span>
-          <div className="box w-full h-full mt-4 bg-white rounded-t-lg">
-            {actionLogs?.map((action) => {
-              return (
-                <div className="flex gap-10">
-                  <span>{format(new Date(action.createdAt!), 'dd/MM/yyyy')}</span>
-                  <span>{format(new Date(action.createdAt!), 'HH:mm')}</span>
-                  <span>{action.user.email}</span>
-                  <span>{action.message}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="w-full h-full">
-          <span>Lista de presença</span>
-          <div className="box w-full h-full mt-4 bg-white rounded-t-lg"></div>
+      <section className="w-full h-[calc(100vh-106px)] overflow-hidden px-11 mt-9 hidden desk:block">
+        <span>Ações recentes</span>
+        <div className="box w-full h-full mt-4 bg-white rounded-t-lg">
+          {actionLogs?.map((action) => {
+            return (
+              <div className="w-full py-3 px-4 border-b flex items-center gap-10 text-black/80">
+                <span>{format(new Date(action.createdAt!), 'dd/MM/yyyy')}</span>
+                <span>{format(new Date(action.createdAt!), 'HH:mm')}</span>
+                <span>{action.user.email}</span>
+                <span>{action.message}</span>
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>

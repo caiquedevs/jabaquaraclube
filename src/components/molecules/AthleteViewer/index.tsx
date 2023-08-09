@@ -23,6 +23,10 @@ export function AthleteViewer({ drawerRef }: Props) {
 
   const { loading } = useAppSelector((state) => state.athleteReducer);
 
+  const handleClickClose = () => {
+    drawerRef.current?.closeDrawer();
+  };
+
   const onDelete = () => {
     const athlete = modalRef.current?.payload;
 
@@ -45,13 +49,21 @@ export function AthleteViewer({ drawerRef }: Props) {
           return (
             <>
               <section className="w-full px-5">
-                <header className="w-full px-10 py-8 flex items-center justify-between bg-sky-50 rounded-xl">
-                  <figure className="flex items-center gap-10">
+                <div className="w-full pt-2.5 pb-7 flex items-center absolute left-0 -top-2 desk:hidden">
+                  <button onClick={handleClickClose} className="py-2 pr-5">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M14 17L9 12L14 7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                <header className="w-full px-10 pt-10 desk:py-8 flex flex-col desk:flex-row items-center justify-between desk:bg-sky-50 rounded-xl">
+                  <figure className="flex flex-col desk:flex-row items-center gap-4 desk:gap-10">
                     <ShowIf show={athlete?.uri}>
                       <img
                         alt="foto do atleta"
                         src={import.meta.env.VITE_S3_URL + athlete?.uri}
-                        className="w-14 h-14 rounded-full object-cover object-top"
+                        className="w-24 h-24 desk:w-14 desk:h-14 rounded-full object-cover object-top"
                       />
                     </ShowIf>
 
@@ -59,7 +71,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                       <FaUserCircle className="text-[56px] text-slate-400" />
                     </ShowIf>
 
-                    <figcaption>
+                    <figcaption className="flex flex-col items-center desk:items-start">
                       <span className="font-bold text-xl text-primary capitalize">{athlete?.name}</span>
                       <span className="mt-1 text-base text-black/60">
                         {idade} - {athlete?.category?.toUpperCase()}
@@ -67,7 +79,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                     </figcaption>
                   </figure>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mt-3 desk:mt-0">
                     <Button
                       type="button"
                       onClick={handleClickRemove}
@@ -115,14 +127,18 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </header>
               </section>
 
-              <ShowIf as="section" show={athlete?.mother.phone || athlete?.father.phone} className="w-full px-5 mt-4 flex">
+              <ShowIf
+                as="section"
+                show={athlete?.mother.phone || athlete?.father.phone}
+                className="w-full px-5 mt-4 hidden desk:flex"
+              >
                 <ShowIf as="div" show={athlete?.mother.phone} className="flex items-center gap-3">
                   <img src="/phone.svg" alt="telefone" />
                   <span className="text-base text-black/70">{athlete?.mother.phone}</span>
                 </ShowIf>
 
                 <ShowIf as="div" show={athlete?.father.phone} className="flex items-center">
-                  <img src="/arrowPhone.svg" alt="seta" className="mx-3" />
+                  <img src="/arrowPhone.svg" alt="seta" className="mx-3 hidden desk:block" />
 
                   <div className="flex items-center gap-3">
                     <img src="/phone.svg" alt="telefone" />
@@ -137,7 +153,7 @@ export function AthleteViewer({ drawerRef }: Props) {
 
                 <div className="mt-4 flex items-center gap-4">
                   <a
-                    href={`${import.meta.env.VITE_S3_URL + athlete?.certificateValidity.uri}`}
+                    href={`${import.meta.env.VITE_S3_URL}${athlete?.certificateValidity.uri}`}
                     download={athlete?.certificateValidity.uri}
                     className="w-12 h-12 flex flex-col items-center justify-center rounded-lg bg-primary font-bold text-white text-xs"
                   >
@@ -168,7 +184,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                   <h2 className="font-semibold text-base text-primary">Dados pessoais</h2>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between gap-4">
+                <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4">
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Data de nascimento</strong>
                     <small className="text-base text-black/70">{athlete?.dateBirth}</small>
@@ -244,7 +260,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                   <h2 className="font-semibold text-base text-primary">Endereço</h2>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4 desk:gap-0">
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Rua</strong>
                     <small className="text-base text-black/70">{athlete?.address.road}</small>
