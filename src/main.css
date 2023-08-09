@@ -163,6 +163,7 @@ a {
 select {
   appearance: none;
   background-image: url('/arrowdown.svg');
+  background-color: #ffffff;
   background-repeat: no-repeat;
   background-position-x: 95%;
   background-position-y: 9px;

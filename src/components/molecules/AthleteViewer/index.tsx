@@ -50,7 +50,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                     <ShowIf show={athlete?.uri}>
                       <img
                         alt="foto do atleta"
-                        src={import.meta.env.VITE_API_URL + '/photos/' + athlete?.uri}
+                        src={import.meta.env.VITE_S3_URL + athlete?.uri}
                         className="w-14 h-14 rounded-full object-cover object-top"
                       />
                     </ShowIf>
@@ -137,9 +137,8 @@ export function AthleteViewer({ drawerRef }: Props) {
 
                 <div className="mt-4 flex items-center gap-4">
                   <a
-                    href={`${import.meta.env.VITE_API_URL}/certificates/${athlete?.certificateValidity.uri}`}
+                    href={`${import.meta.env.VITE_S3_URL + athlete?.certificateValidity.uri}`}
                     download={athlete?.certificateValidity.uri}
-                    target="_blank"
                     className="w-12 h-12 flex flex-col items-center justify-center rounded-lg bg-primary font-bold text-white text-xs"
                   >
                     <span>DOC</span>

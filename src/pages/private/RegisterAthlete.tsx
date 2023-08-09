@@ -69,10 +69,8 @@ const validationSchema = Yup.object().shape({
     .min(10, 'Data inválida')
     .test('dateBirth', 'Data inválida', (value) => {
       if (!value) return true;
-
       const [day, month, year] = value?.split('/').map(Number);
       const yearValid = year <= new Date().getFullYear();
-
       return yearValid && isDateValid(value!);
     }),
   category: Yup.string().required('A Categoria é obrigatória!'),
@@ -116,6 +114,16 @@ export function RegisterAthlete({}: Props) {
 
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.currentTarget.files?.[0]) return;
+
+    const file = event.currentTarget.files?.[0];
+
+    const fileSizeLimit = 1 * 1024 * 1024; // 5 MB
+
+    if (file.size > fileSizeLimit) {
+      alert('O arquivo selecionado excede o limite de tamanho de 1 MB.');
+      return;
+    }
+
     formikRef.current?.setFieldValue(event.target.name, event.currentTarget.files?.[0] || null);
   };
 
@@ -290,7 +298,6 @@ export function RegisterAthlete({}: Props) {
         onSubmit={handleSubmit}
       >
         {({ values, errors }) => {
-          console.log('errors', errors);
           return (
             <Form className="w-full max-w-md mx-auto">
               <small className="mb-2 font-normal text-sm text-black/70">Cadastrar novo atleta</small>
@@ -308,7 +315,7 @@ export function RegisterAthlete({}: Props) {
                     className="group/image w-12 h-12 flex items-center justify-center"
                   >
                     <img
-                      src={import.meta.env.VITE_API_URL + '/photos/' + values.uri}
+                      src={import.meta.env.VITE_S3_URL + values.uri}
                       alt="foto do atleta"
                       className="w-10 h-10 rounded-full object-cover object-top"
                     />
@@ -342,7 +349,14 @@ export function RegisterAthlete({}: Props) {
                   </ShowIf>
 
                   <label>
-                    <input type="file" name="photo" onChange={handleChangeFile} value={''} className="hidden" />
+                    <input
+                      type="file"
+                      name="photo"
+                      onChange={handleChangeFile}
+                      value={''}
+                      accept=".jpg, .jpeg, .png"
+                      className="hidden"
+                    />
                     <div className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 select-none cursor-pointer">
                       Alterar foto
                     </div>
@@ -453,7 +467,14 @@ export function RegisterAthlete({}: Props) {
 
               <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-7 grid gap-2.5 items-end">
                 <label className="overflow-hidden pb-6">
-                  <input type="file" name="certificateValidity.file" onChange={handleChangeFile} value={''} className="hidden" />
+                  <input
+                    type="file"
+                    name="certificateValidity.file"
+                    onChange={handleChangeFile}
+                    value={''}
+                    accept=".pdf, .jpg, .jpeg, .png"
+                    className="hidden"
+                  />
                   <span className="mb-2.5 font-normal text-sm text-black">Atestado médico</span>
 
                   <div

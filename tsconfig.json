@@ -23,7 +23,7 @@
     "jsx": "react-jsx",
     "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["src", "../jabaquaraclube-api/src/utils/minImage.ts"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "exclude": ["./node-modules"]
 }
