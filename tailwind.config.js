@@ -106,7 +106,7 @@ module.exports = withMT({
       },
       gridTemplateColumns: {},
       backgroundImage: {
-        'bg-mobile': "url('bg-mobile.jpg')",
+        'bg-mobile': "url('/bg-mobile.jpg')",
       },
       screens: {
         mobile: '900px',
