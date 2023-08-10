@@ -150,8 +150,8 @@ export function HomePage() {
           {actionLogs?.map((action) => {
             return (
               <div className="w-full py-3 px-4 border-b flex items-center gap-10 text-black/80">
-                <span>{format(new Date(action.createdAt!), 'dd/MM/yyyy')}</span>
-                <span>{format(new Date(action.createdAt!), 'HH:mm')}</span>
+                <span>{format(new Date(action.date!), 'dd/MM/yyyy')}</span>
+                <span>{format(new Date(action.date!), 'HH:mm')}</span>
                 <span>{action.user.email}</span>
                 <span>{action.message}</span>
               </div>

@@ -5,6 +5,7 @@ export interface ActionLog {
 
   user: Auth;
   message: string;
+  date: string;
 
   createdAt?: string;
   updatedAt?: string;
