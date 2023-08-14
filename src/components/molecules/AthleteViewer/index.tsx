@@ -74,7 +74,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                     <figcaption className="flex flex-col items-center desk:items-start">
                       <span className="font-bold text-xl text-primary capitalize">{athlete?.name}</span>
                       <span className="mt-1 text-base text-black/60">
-                        {idade} - {athlete?.category?.toUpperCase()}
+                        {idade} - S{athlete?.category?.name}
                       </span>
                     </figcaption>
                   </figure>
@@ -202,7 +202,7 @@ export function AthleteViewer({ drawerRef }: Props) {
 
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Categoria</strong>
-                    <small className="text-base text-black/70 capitalize">{athlete?.category}</small>
+                    <small className="text-base text-black/70 capitalize">S{athlete?.category?.name}</small>
                   </div>
                 </div>
 

@@ -1,8 +1,56 @@
+import React from 'react';
+import { Button, Input, Modal } from 'components';
+import { ModalProps } from 'components/atoms/Modal';
 import { Link } from 'react-router-dom';
+import { Form, Formik, FormikProps } from 'formik';
+import { useDispatch } from 'react-redux';
 
-type Props = {};
+import * as actionsCategory from 'store/category/actions';
+import { toast } from 'react-toastify';
+import { useAppSelector } from 'hooks/useAppSelector';
+import { Mode } from 'interfaces/mode';
+import { Category } from 'interfaces/category';
 
-export function CategoryPage({}: Props) {
+const initialValues = {
+  _id: '',
+  name: '',
+  mode: 'create',
+};
+
+export function CategoryPage() {
+  const dispatch = useDispatch();
+
+  const modalRef = React.useRef<ModalProps>(null);
+  const formikRef = React.useRef<FormikProps<typeof initialValues>>(null);
+
+  const { categories, loading } = useAppSelector((state) => state.categoryReducer);
+
+  const callbackCloseModal = () => formikRef.current?.resetForm();
+  const openModal = (payload?: any) => modalRef.current?.openModal(payload);
+  const closeModal = () => modalRef.current?.closeModal();
+
+  const onCreate = ({ name }: typeof initialValues) => {
+    const callBack = () => {
+      toast.success('Categoria cadastrada com sucesso!', { toastId: 'createCategory' });
+      closeModal();
+    };
+
+    dispatch(actionsCategory.create({ data: { name }, callBack }));
+  };
+
+  const onUpdate = ({ _id, name }: typeof initialValues) => {
+    const callBack = () => {
+      toast.success('Categoria cadastrada com sucesso!', { toastId: 'updateCategory' });
+      closeModal();
+    };
+
+    dispatch(actionsCategory.update({ data: { _id, name }, callBack }));
+  };
+
+  const handleSubmit = (formikValues: typeof initialValues) => {
+    formikValues.mode === 'update' ? onUpdate(formikValues) : onCreate(formikValues);
+  };
+
   return (
     <main className="w-full h-full overflow-y-auto ">
       <header style={{ borderColor: '#DDDFE2' }} className="border-b">
@@ -21,27 +69,36 @@ export function CategoryPage({}: Props) {
               <h1 className="font-changa font-semibold text-4xl text-black/70">Categorias</h1>
             </div>
 
-            <button type="button" className="px-6 py-2 bg-primary rounded-md mb-1">
+            <button type="button" onClick={openModal} className="px-6 py-2 bg-primary rounded-md mb-1">
               <span className="font-semibold text-white text-sm">Cadastrar nova categoria</span>
             </button>
           </div>
 
           <div className="flex gap-7">
-            <button type="button" className="px-2 pb-2 border-b-2 border-primary">
+            <div className="px-2 pb-2 border-b-2 border-primary">
               <span className="font-semibold text-black/70 text-sm">Todas categorias</span>
-            </button>
+            </div>
           </div>
         </section>
       </header>
 
       <section style={{ maxWidth: '1016px' }} className="w-full h-full pt-7 mx-auto flex flex-col">
-        <ul className="grid grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((category, index) => {
+        <ul className="grid grid-cols-5 gap-x-6 gap-y-8">
+          {categories?.map((category) => {
+            const handleClickEdit = () => {
+              openModal();
+              formikRef.current?.setValues({ ...category, mode: 'update' });
+            };
+
             return (
               <li className="box bg-white rounded-lg">
                 <div className="w-1.5 h-full bg-slate-300 rounded-l-lg absolute left-0 top-0" />
 
-                <button type="button" className="p-1.5 rounded-md bg-slate-100 absolute top-1.5 right-1.5 ">
+                <button
+                  type="button"
+                  onClick={handleClickEdit}
+                  className="p-1.5 rounded-md bg-slate-100 absolute top-1.5 right-1.5 z-10"
+                >
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill-rule="evenodd"
@@ -58,11 +115,11 @@ export function CategoryPage({}: Props) {
 
                 <div className="pt-9 pb-14 flex justify-center">
                   <span className="font-semibold text-4xl text-black/60">S</span>
-                  <span className="number-category flex flex-col font-semibold text-4xl text-black/60">1{index + 1}</span>
+                  <span className="number-category flex flex-col font-semibold text-4xl text-black/60">{category.name}</span>
                 </div>
 
                 <div className="pl-7 pb-6 flex flex-col">
-                  <span className="text-lg">30</span>
+                  <span className="text-lg text-black/60">{category.qtd.toString().padStart(2, '0')}</span>
                   <span className="font-semibold text-lg">Atletas</span>
                 </div>
               </li>
@@ -70,6 +127,63 @@ export function CategoryPage({}: Props) {
           })}
         </ul>
       </section>
+
+      <Formik innerRef={formikRef} initialValues={initialValues} onSubmit={handleSubmit}>
+        {({ values, errors }) => {
+          return (
+            <Modal ref={modalRef} callBackClose={callbackCloseModal}>
+              {() => (
+                <Form className="w-full h-full bg-white px-5 py-6">
+                  <div className="mt-2 mb-4">
+                    <h1 className="font-changa font-semibold text-2xl text-black/60">Cadastrar categoria</h1>
+                    <small className="mb-4 mt-1.5 font-normal text-base text-black/70">
+                      Informe o número da Categoria abaixo para cadastrar uma categoria!
+                    </small>
+                  </div>
+
+                  <fieldset className="w-full mt-3 flex flex-col justify-center">
+                    <span className=" pr-3 absolute left-4 z-10 text-black/80 font-semibold border-r border-black/20">SUB</span>
+
+                    <Input
+                      type="number"
+                      name="name"
+                      value={values.name}
+                      error={errors.name}
+                      required={true}
+                      placeholder="00"
+                      inputMode="decimal"
+                      autoFocus={true}
+                      className="pl-[68px] py-8 desk:py-6 rounded-md text-black"
+                    />
+                  </fieldset>
+
+                  <Button
+                    type="submit"
+                    loading={loading.create || loading.update}
+                    disabled={loading.create || loading.update}
+                    className="py-3 mt-6 bg-primary rounded-md normal-case text-sm font-normal"
+                  >
+                    {loading.create || loading.update
+                      ? 'Salvando...'
+                      : values.mode === 'update'
+                      ? 'Salvar alterações'
+                      : 'Continuar'}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    disabled={loading.create || loading.update}
+                    onClick={closeModal}
+                    className="py-3 mt-2  bg-transparent border border-slate-300 rounded-md normal-case text-sm font-normal text-black/60"
+                  >
+                    Cancelar
+                  </Button>
+                </Form>
+              )}
+            </Modal>
+          );
+        }}
+      </Formik>
     </main>
   );
 }

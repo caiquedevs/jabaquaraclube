@@ -1,7 +1,6 @@
 import { Helmet } from 'react-helmet';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { isAndroid } from 'utils/constants';
 
 import * as actionsAuth from 'store/auth/actions';
 import * as actionsLog from 'store/actionLogs/actions';

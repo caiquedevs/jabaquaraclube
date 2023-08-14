@@ -21,7 +21,10 @@ import { Mode } from 'interfaces/mode';
 const initialValues: Athlete & Mode = {
   name: '',
   photo: null,
-  category: '',
+  category: {
+    _id: '',
+    name: '',
+  },
   rg: '',
   cpf: '',
   dateBirth: '',
@@ -73,7 +76,9 @@ const validationSchema = Yup.object().shape({
       const yearValid = year <= new Date().getFullYear();
       return yearValid && isDateValid(value!);
     }),
-  category: Yup.string().required('A Categoria é obrigatória!'),
+  category: Yup.object().shape({
+    _id: Yup.string().required('A Categoria é obrigatória!'),
+  }),
   isFederated: Yup.object().shape({
     date: Yup.string()
       .min(4, 'Data inválida')
@@ -109,6 +114,7 @@ export function RegisterAthlete({}: Props) {
   const formikRef = React.useRef<FormikProps<typeof initialValues>>(null);
 
   const { athletes, loading } = useAppSelector((state) => state.athleteReducer);
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.categoryReducer);
 
   const [pageTitle, setPageTitle] = React.useState('');
 
@@ -426,17 +432,15 @@ export function RegisterAthlete({}: Props) {
 
                 <Input
                   as="select"
-                  name="category"
+                  name="category._id"
                   error={errors.category}
-                  value={values.category} // Use a propriedade `value` em vez de `selected`
-                  className={`h-[66px] desk:h-13  ${values.category === '' ? '!text-black/70' : 'text-black'}`}
+                  value={values.category?._id}
+                  className={`h-[66px] desk:h-13  ${values.category?._id === '' ? '!text-black/70' : 'text-black'}`}
                 >
                   <option className="hidden">Categoria</option>
-                  <option value="s11">S11</option>
-                  <option value="s12">S12</option>
-                  <option value="s13">S13</option>
-                  <option value="s14">S14</option>
-                  <option value="s15">S15</option>
+                  {categories?.map((category) => {
+                    return <option value={category._id}>S{category.name}</option>;
+                  })}
                 </Input>
               </fieldset>
 

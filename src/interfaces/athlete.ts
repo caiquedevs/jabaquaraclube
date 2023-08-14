@@ -1,3 +1,5 @@
+import { Category } from 'interfaces/category';
+
 type Federation = {
   clubName: string;
   date: string;
@@ -37,7 +39,7 @@ export type Athlete = {
   uri?: string;
   oldUri?: string;
   photo?: File | null;
-  category?: string;
+  category?: Partial<Category>;
   rg: string;
   cpf: string;
   dateBirth: string;

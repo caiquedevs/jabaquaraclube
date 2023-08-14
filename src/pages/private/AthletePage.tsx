@@ -188,7 +188,7 @@ export function AthletePage() {
                 >
                   <div className="flex items-center gap-7">
                     <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-300 animate-fadeIn">
-                      <span className="font-semibold text-base text-black/70 uppercase">{athlete.category}</span>
+                      <span className="font-semibold text-base text-black/70 uppercase">S{athlete.category?.name}</span>
                     </div>
 
                     <strong className="min-w-[300px] font-semibold text-[17px] desk:text-base text-black/80 capitalize animate-fadeIn">
