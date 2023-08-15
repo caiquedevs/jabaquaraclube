@@ -82,8 +82,8 @@ export function CategoryPage() {
         </section>
       </header>
 
-      <section style={{ maxWidth: '1016px' }} className="w-full h-full pt-7 mx-auto flex flex-col">
-        <ul className="grid grid-cols-5 gap-x-6 gap-y-8">
+      <section style={{ maxWidth: '1016px' }} className="w-full h-full pt-8 mx-auto flex flex-col">
+        <ul className="pb-20 grid grid-cols-5 gap-x-6 gap-y-8">
           {categories?.map((category) => {
             const handleClickEdit = () => {
               openModal();
@@ -97,12 +97,12 @@ export function CategoryPage() {
                 <button
                   type="button"
                   onClick={handleClickEdit}
-                  className="p-1.5 rounded-md bg-slate-100 absolute top-1.5 right-1.5 z-10"
+                  className="p-1.5 rounded-md bg-slate-100 absolute top-2 right-1.5 z-10"
                 >
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       d="M16.0909 4.062C16.1622 4.17016 16.1939 4.29959 16.1808 4.42844C16.1677 4.5573 16.1105 4.67767 16.0189 4.76925L9.12418 11.6633C9.05364 11.7337 8.96564 11.7842 8.86918 11.8095L5.99743 12.5595C5.9025 12.5843 5.80275 12.5838 5.70807 12.5581C5.6134 12.5323 5.52709 12.4823 5.45772 12.413C5.38835 12.3436 5.33833 12.2573 5.31262 12.1626C5.28692 12.0679 5.28642 11.9682 5.31118 11.8733L6.06118 9.00225C6.08307 8.91607 6.12437 8.83603 6.18193 8.76825L13.1022 1.8525C13.2076 1.74716 13.3506 1.688 13.4997 1.688C13.6487 1.688 13.7917 1.74716 13.8972 1.8525L16.0189 3.9735C16.0458 4.00051 16.07 4.03016 16.0909 4.062ZM14.8257 4.371L13.4997 3.04575L7.11118 9.43425L6.64243 11.229L8.43718 10.7603L14.8257 4.371Z"
                       fill="black"
                     />
@@ -131,13 +131,17 @@ export function CategoryPage() {
       <Formik innerRef={formikRef} initialValues={initialValues} onSubmit={handleSubmit}>
         {({ values, errors }) => {
           return (
-            <Modal ref={modalRef} callBackClose={callbackCloseModal}>
+            <Modal size="sm" ref={modalRef} callBackClose={callbackCloseModal}>
               {() => (
                 <Form className="w-full h-full bg-white px-5 py-6">
                   <div className="mt-2 mb-4">
-                    <h1 className="font-changa font-semibold text-2xl text-black/60">Cadastrar categoria</h1>
+                    <h1 className="font-changa font-semibold text-2xl text-black/60">
+                      {values?.mode === 'update' ? 'Atualizar' : 'Cadastrar'} categoria
+                    </h1>
+
                     <small className="mb-4 mt-1.5 font-normal text-base text-black/70">
-                      Informe o número da Categoria abaixo para cadastrar uma categoria!
+                      Informe o número da Categoria abaixo para {values?.mode === 'update' ? 'atualizar esta' : 'cadastrar uma'}
+                      categoria!
                     </small>
                   </div>
 

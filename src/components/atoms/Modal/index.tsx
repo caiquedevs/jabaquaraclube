@@ -64,7 +64,7 @@ function ModalComponent(props: PageProps, ref: ForwardedRef<ModalProps | undefin
     props.children(payloadModal);
   }
   return (
-    <Dialog open={isOpen} size="xs" handler={handleOpen} className="!p-0">
+    <Dialog open={isOpen} size={props.size || 'xs'} handler={handleOpen} className="!p-0">
       <DialogBody>{props.children(payloadModal)}</DialogBody>
     </Dialog>
   );
