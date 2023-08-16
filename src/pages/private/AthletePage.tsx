@@ -193,7 +193,7 @@ export function AthletePage() {
           ) : null}
 
           {!loading.fetch && filtered && filtered.length === 0 ? (
-            <div className="px-7 py-4 desk:py-[26px] flex items-center justify-between border-y border-border-primary">
+            <div className="px-7 py-4 desk:py-[24px] flex items-center justify-between border-t border-border-primary">
               <div className="flex items-center gap-7">
                 <span className="text-base text-black/80">Nenhum resultado encontrado</span>
               </div>

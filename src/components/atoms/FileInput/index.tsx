@@ -4,6 +4,7 @@ import { LiaTrashAlt } from 'react-icons/lia';
 
 type Props = {
   name: string;
+  label?: string;
   value: any;
   onChange: (name: string, certificate: File) => void;
   onRemove: (name: string) => void;
@@ -14,7 +15,6 @@ export function FileInput(props: Props) {
     if (!event.currentTarget.files?.[0]) return;
 
     const file = event.currentTarget.files?.[0];
-
     const fileSizeLimit = 1 * 1024 * 1024; // 5 MB
 
     if (file.size > fileSizeLimit) {
@@ -40,7 +40,7 @@ export function FileInput(props: Props) {
         className="hidden"
       />
 
-      <span className="mb-2.5 font-normal text-sm text-black">Atestado médico</span>
+      {props.label ? <span className="mb-2.5 font-normal text-sm text-black">{props.label}</span> : null}
 
       <div
         className={`w-full h-[66px] desk:h-13 px-3 rounded-base border border-dashed border-slate-400 flex items-center justify-center cursor-pointer ${
@@ -50,7 +50,7 @@ export function FileInput(props: Props) {
         <ShowIf as="div" show={props.value?.name || props.value} className="w-full h-full flex items-center jutify-center">
           <span className="line-clamp-one text-sm">{props.value?.name || props.value}</span>
 
-          <ShowIf show={props.value}>
+          <ShowIf show={props.value?.name}>
             <button data-value="certificateValidity.file" type="button" onClick={handleRemoveFile} className="absolute -right-1">
               <LiaTrashAlt className="text-primary text-2xl" />
             </button>

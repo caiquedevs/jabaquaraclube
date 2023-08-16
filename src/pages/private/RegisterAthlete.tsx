@@ -20,16 +20,31 @@ import { Mode } from 'interfaces/mode';
 
 const initialValues: Athlete & Mode = {
   name: '',
-  photo: null,
+  email: '',
+  mode: 'create',
+  photo: {
+    uri: '',
+    file: undefined,
+  },
   category: {
     _id: '',
     name: '',
   },
-  rg: '',
-  cpf: '',
-  dateBirth: '',
-  email: '',
-  mode: 'create',
+  rg: {
+    uri: '',
+    value: '',
+    file: undefined,
+  },
+  cpf: {
+    uri: '',
+    value: '',
+    file: undefined,
+  },
+  birth: {
+    uri: '',
+    date: '',
+    file: undefined,
+  },
   isFederated: {
     clubName: '',
     date: '',
@@ -52,7 +67,7 @@ const initialValues: Athlete & Mode = {
     phone: '',
   },
   certificateValidity: {
-    file: null,
+    file: undefined,
     date: '',
   },
   situation: {
@@ -115,6 +130,24 @@ export function RegisterAthlete() {
   const { categories, loading: categoriesLoading } = useAppSelector((state) => state.categoryReducer);
 
   const [pageTitle, setPageTitle] = React.useState('');
+
+  const handleChangePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.currentTarget.files?.[0]) return;
+
+    const file = event.currentTarget.files?.[0];
+    const fileSizeLimit = 1 * 1024 * 1024; // 5 MB
+
+    if (file.size > fileSizeLimit) {
+      alert('O arquivo selecionado excede o limite de tamanho de 1 MB.');
+      return;
+    }
+
+    formikRef.current?.setFieldValue('photo.file', file || null);
+  };
+
+  const handleRemovePhoto = () => {
+    setTimeout(() => formikRef.current?.setFieldValue('photo', null), 0);
+  };
 
   const handleChangeFile = (name: string, certificate: File) => {
     formikRef.current?.setFieldValue(name, certificate || null);
@@ -189,10 +222,10 @@ export function RegisterAthlete() {
     const values = structuredClone(formikValues);
     const formData = new FormData();
 
-    formData.append('photo', values.photo!);
+    formData.append('photo', values.photo.file!);
     formData.append('certificate', values.certificateValidity.file!);
 
-    delete values.photo;
+    delete values.photo.file;
     delete values.certificateValidity.file;
 
     formData.append('data', JSON.stringify(values));
@@ -209,10 +242,10 @@ export function RegisterAthlete() {
     const values = structuredClone(formikValues);
     const formData = new FormData();
 
-    formData.append('photo', values.photo!);
+    formData.append('photo', values.photo.file!);
     formData.append('certificate', values.certificateValidity.file!);
 
-    delete values.photo;
+    delete values.photo.file;
     delete values.certificateValidity.file;
 
     formData.append('data', JSON.stringify(values));
@@ -310,11 +343,11 @@ export function RegisterAthlete() {
                 <div className="mt-2 flex items-center gap-x-3">
                   <ShowIf
                     as="figure"
-                    show={values.uri && !values.photo}
+                    show={values.photo.uri && !values.photo.file}
                     className="group/image w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center"
                   >
                     <img
-                      src={import.meta.env.VITE_S3_URL + values.uri}
+                      src={import.meta.env.VITE_S3_URL + values.photo.uri}
                       alt="foto do atleta"
                       className="w-full h-full rounded-full object-cover object-top"
                     />
@@ -322,11 +355,11 @@ export function RegisterAthlete() {
 
                   <ShowIf
                     as="figure"
-                    show={values.photo}
+                    show={values.photo.file}
                     className="group/image w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center"
                   >
                     <img
-                      src={values.photo ? URL.createObjectURL(values.photo) : ''}
+                      src={values.photo.file ? URL.createObjectURL(values.photo.file!) : ''}
                       alt="foto do atleta"
                       className="w-20 h-20 desk:w-12 desk:h-12 rounded-full object-cover object-top"
                     />
@@ -334,14 +367,14 @@ export function RegisterAthlete() {
                     <button
                       data-value="photo"
                       type="button"
-                      onClick={handleRemoveFile}
+                      onClick={handleRemovePhoto}
                       className="w-20 h-20 desk:w-12 desk:h-12 flex items-center justify-center rounded-full bg-black/50 absolute group-hover/image:opacity-100 opacity-0 duration-200"
                     >
                       <LiaTrashAlt className="text-white text-2xl" />
                     </button>
                   </ShowIf>
 
-                  <ShowIf show={!values.photo && !values.uri}>
+                  <ShowIf show={!values.photo.file && !values.photo.uri}>
                     <svg
                       className="w-20 h-20 desk:w-12 desk:h-12 text-gray-300"
                       viewBox="0 0 24 24"
@@ -359,9 +392,9 @@ export function RegisterAthlete() {
                   <label>
                     <input
                       type="file"
-                      name="photo"
-                      onChange={handleChangeFile}
-                      value={''}
+                      name="photo.file"
+                      value=""
+                      onChange={handleChangePhoto}
                       accept=".jpg, .jpeg, .png"
                       className="hidden"
                     />
@@ -383,24 +416,30 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
+              <fieldset className="mt-3 grid items-end gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <div style={{ height: 68 }}>
+                  <Input
+                    type="text"
+                    name="rg"
+                    value={values.rg.value}
+                    error={errors.rg?.value}
+                    onPaste={onPasteRg}
+                    onChange={handleChangeRg}
+                    placeholder="RG"
+                    className="py-8 desk:py-6"
+                    inputMode="numeric"
+                  />
+                </div>
+
+                <FileInput name="rg.file" value="" onChange={() => {}} onRemove={() => {}} />
+              </fieldset>
+
               <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
-                  name="rg"
-                  value={values.rg}
-                  error={errors.rg}
-                  onPaste={onPasteRg}
-                  onChange={handleChangeRg}
-                  placeholder="RG"
-                  className="py-8 desk:py-6"
-                  inputMode="numeric"
-                />
-
-                <Input
-                  type="text"
                   name="cpf"
-                  value={values.cpf}
-                  error={errors.cpf}
+                  value={values.cpf.value}
+                  error={errors.cpf?.value}
                   onChange={handleChangeCpf}
                   placeholder="CPF"
                   className="py-8 desk:py-6"
@@ -412,8 +451,8 @@ export function RegisterAthlete() {
                 <Input
                   type="text"
                   name="dateBirth"
-                  value={values.dateBirth}
-                  error={errors.dateBirth}
+                  value={values.birth.date}
+                  error={errors.birth?.date}
                   onChange={handleChangeDate}
                   placeholder="Data de nascimento"
                   className="py-8 desk:py-6"
