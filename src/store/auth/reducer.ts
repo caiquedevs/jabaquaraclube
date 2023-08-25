@@ -7,11 +7,34 @@ const initialState = {
   expiration: 0,
   auth: {} as Auth,
   isLoggedIn: false,
-  loading: { login: false, create: false, update: false, remove: false },
+
+  users: null as Auth[] | null,
+  loading: { login: false, fetch: false, create: false, update: false, remove: false },
 };
 
 export function authReducer(state = initialState, action: any) {
   switch (action.type) {
+    case authTypes.FETCH_REQUEST: {
+      const newState = { ...state };
+      newState.loading.fetch = true;
+      return newState;
+    }
+
+    case authTypes.FETCH_SUCCESS: {
+      const newState = { ...state };
+
+      newState.loading.fetch = false;
+      newState.users = action.payload;
+
+      return newState;
+    }
+
+    case authTypes.FETCH_FAILURE: {
+      const newState = { ...initialState };
+      newState.loading.fetch = false;
+      return newState;
+    }
+
     case authTypes.REGISTER_REQUEST: {
       const newState = { ...state };
       newState.loading.create = true;
@@ -20,7 +43,13 @@ export function authReducer(state = initialState, action: any) {
 
     case authTypes.REGISTER_SUCCESS: {
       const newState = { ...state };
+
+      if (newState.users) newState.users.push(action.payload);
+      else newState.users = [...action.payload];
       newState.loading.create = false;
+
+      console.log(newState.users);
+
       return newState;
     }
 
@@ -56,6 +85,7 @@ export function authReducer(state = initialState, action: any) {
 
     case authTypes.LOGOUT_USER: {
       const newState = { ...initialState };
+      localStorage.removeItem('persist:auth');
       api.defaults.headers.Authorization = '';
       return newState;
     }
@@ -91,12 +121,6 @@ export function authReducer(state = initialState, action: any) {
       // newState.loadingUpdateUserName = false;
       // newState.loadingUpdateImage = false;
 
-      return newState;
-    }
-
-    case 'RESET_LOADINGS': {
-      const newState = { ...state };
-      newState.loading = { login: false, create: false, update: false, remove: false };
       return newState;
     }
 

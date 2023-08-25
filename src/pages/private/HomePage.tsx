@@ -97,15 +97,14 @@ export function HomePage() {
             <button
               type="button"
               data-route="/access"
-              disabled={true}
               onClick={handleClickNavigate}
-              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-slate-200 border-2 border-black cursor-default desk:cursor-pointer"
+              className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-white border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/key.svg" alt="chave icon" />
 
               <div className="flex flex-col gap-0.5">
                 <strong className="font-semibold text-lg desk:text-sm">Acessos</strong>
-                <small className="font-normal text-base desk:text-xs">Em breve...</small>
+                <small className="font-normal text-base desk:text-xs">Gerenciar Acessos</small>
               </div>
             </button>
           </li>

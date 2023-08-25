@@ -43,6 +43,47 @@ input::placeholder {
   font-size: 15px;
   @apply text-black/70;
 }
+
+input:focus ~ .placeholder,
+textarea:focus ~ .placeholder {
+  top: 0px;
+  left: 10px;
+  z-index: 30;
+}
+
+input:focus ~ .placeholder span,
+textarea:focus ~ .placeholder span {
+  @apply text-blue-500 text-xs;
+}
+
+.placeholder[data-active='true'] {
+  top: 0px;
+  left: 10px;
+  z-index: 30;
+}
+
+.placeholder[data-active='true'] span {
+  @apply text-xs;
+}
+
+.placeholder::after {
+  content: '';
+  width: 109%;
+  height: 4px;
+
+  background-color: #fff;
+
+  position: absolute;
+  left: -4.5%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: -1;
+}
+
+.placeholder[data-error='true'] span {
+  @apply !text-primary;
+}
+
 /* Fundo do scroll*/
 ::-webkit-scrollbar-track {
   background: transparent;

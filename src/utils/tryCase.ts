@@ -4,6 +4,7 @@ import * as actionsAuth from 'store/auth/actions';
 
 export function* tryCase(func: any, ...args: any) {
   try {
+    // alert(args);
     yield* func(...args);
   } catch (error: any) {
     if (error.response.status === 401) yield put(actionsAuth.logoutUser());

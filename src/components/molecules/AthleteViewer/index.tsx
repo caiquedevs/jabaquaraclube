@@ -44,7 +44,7 @@ export function AthleteViewer({ drawerRef }: Props) {
         {(athlete: Athlete | undefined) => {
           const handleClickRemove = () => modalRef.current?.openModal(athlete);
 
-          const idade = getAge(athlete?.dateBirth!);
+          const idade = getAge(athlete?.birth.date!);
 
           return (
             <>
@@ -59,15 +59,15 @@ export function AthleteViewer({ drawerRef }: Props) {
 
                 <header className="w-full px-10 pt-10 desk:py-8 flex flex-col desk:flex-row items-center justify-between desk:bg-sky-50 rounded-xl">
                   <figure className="flex flex-col desk:flex-row items-center gap-4 desk:gap-10">
-                    <ShowIf show={athlete?.uri}>
+                    <ShowIf show={athlete?.photo.uri}>
                       <img
                         alt="foto do atleta"
-                        src={import.meta.env.VITE_S3_URL + athlete?.uri}
+                        src={import.meta.env.VITE_S3_URL + athlete?.photo.uri}
                         className="w-24 h-24 desk:w-14 desk:h-14 rounded-full object-cover object-top"
                       />
                     </ShowIf>
 
-                    <ShowIf show={!athlete?.uri}>
+                    <ShowIf show={!athlete?.photo.uri}>
                       <FaUserCircle className="text-[56px] text-slate-400" />
                     </ShowIf>
 
@@ -187,17 +187,17 @@ export function AthleteViewer({ drawerRef }: Props) {
                 <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4">
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Data de nascimento</strong>
-                    <small className="text-base text-black/70">{athlete?.dateBirth}</small>
+                    <small className="text-base text-black/70">{athlete?.birth.date}</small>
                   </div>
 
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">RG</strong>
-                    <small className="text-base text-black/70">{athlete?.rg}</small>
+                    <small className="text-base text-black/70">{athlete?.rg.value}</small>
                   </div>
 
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">CPF</strong>
-                    <small className="text-base text-black/70">{athlete?.cpf}</small>
+                    <small className="text-base text-black/70">{athlete?.cpf.value}</small>
                   </div>
 
                   <div>

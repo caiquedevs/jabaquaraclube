@@ -11,135 +11,126 @@ import { MdArrowBackIosNew } from 'react-icons/md';
 
 import { useDispatch } from 'react-redux';
 
+import * as actionsCategory from 'store/category/actions';
 import * as actionsAthlete from 'store/athlete/actions';
+
 import { toast } from 'react-toastify';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { Mode } from 'interfaces/mode';
-
-const initialValues: Athlete & Mode = {
-  name: '',
-  email: '',
-  mode: 'create',
-  photo: {
-    uri: '',
-    file: undefined,
-  },
-  category: {
-    _id: '',
-    name: '',
-  },
-  rg: {
-    uri: '',
-    value: '',
-    file: undefined,
-  },
-  cpf: {
-    uri: '',
-    value: '',
-    file: undefined,
-  },
-  birth: {
-    uri: '',
-    date: '',
-    file: undefined,
-  },
-  isFederated: {
-    clubName: '',
-    date: '',
-  },
-  school: {
-    name: '',
-    period: '',
-  },
-  address: {
-    road: '',
-    number: '',
-    cep: '',
-  },
-  mother: {
-    name: '',
-    phone: '',
-  },
-  father: {
-    name: '',
-    phone: '',
-  },
-  certificateValidity: {
-    file: undefined,
-    date: '',
-  },
-  situation: {
-    status: 'regular',
-    observation: '',
-  },
-};
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required('O Nome é obrigatório!'),
-  rg: Yup.string().required('O RG é obrigatório!').min(12, 'RG inválido'),
-  cpf: Yup.string()
-    .required('O CPF é obrigatório!')
-    .test('cpf', 'CPF inválido.', (value) => isValidCPF(value!)),
-  dateBirth: Yup.string()
-    .required('A Data de nascimento é obrigatório!')
-    .min(10, 'Data inválida')
-    .test('dateBirth', 'Data inválida', (value) => {
-      if (!value) return true;
-      const [day, month, year] = value?.split('/').map(Number);
-      const yearValid = year <= new Date().getFullYear();
-      return yearValid && isDateValid(value!);
-    }),
-  category: Yup.object().shape({
-    _id: Yup.string().required('A Categoria é obrigatória!'),
-  }),
-  isFederated: Yup.object().shape({
-    date: Yup.string()
-      .min(4, 'Data inválida')
-      .test('isFederated.date', 'Data inválida', (value) => {
-        if (!value) return true;
-        return Number(value) <= new Date().getFullYear();
-      }),
-  }),
-  certificateValidity: Yup.object().shape({
-    date: Yup.string().test('isFederated.date', 'Data inválida', (value) => !value || isDateValid(value!)),
-  }),
-  mother: Yup.object().shape({
-    phone: Yup.string().test('mother.phone', 'Número inválido', (value) => !value || value?.length! >= 14),
-  }),
-  father: Yup.object().shape({
-    phone: Yup.string().test('mother.phone', 'Número inválido', (value) => !value || value?.length! >= 14),
-  }),
-  email: Yup.string().test('email', 'Email inválido', (value) => !value || validator.isEmail(value!)),
-  address: Yup.object().shape({
-    road: Yup.string().required('A Rua é obrigatória!'),
-    number: Yup.string().required('O Número é obrigatório!'),
-    cep: Yup.string().required('O CEP é obrigatório!').min(9, 'CEP inválido'),
-  }),
-});
+import { Switch } from '@material-tailwind/react';
+import { initialValuesAthlete } from 'utils/constants';
 
 export function RegisterAthlete() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const formikRef = React.useRef<FormikProps<typeof initialValues>>(null);
+  const formikRef = React.useRef<FormikProps<typeof initialValuesAthlete>>(null);
+  const firstErrorFieldRef = React.useRef<HTMLElement | null>(null);
 
   const { athletes, loading } = useAppSelector((state) => state.athleteReducer);
   const { categories, loading: categoriesLoading } = useAppSelector((state) => state.categoryReducer);
 
   const [pageTitle, setPageTitle] = React.useState('');
 
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('O Nome é obrigatório!'),
+    email: Yup.string().test('email', 'Email inválido', (value) => !value || validator.isEmail(value!)),
+
+    rg: Yup.object().shape({
+      value: Yup.string().required('O RG é obrigatório!').min(12, 'RG inválido'),
+    }),
+
+    cpf: Yup.object().shape({
+      value: Yup.string()
+        .required('O CPF é obrigatório!')
+        .test('cpf.value', 'CPF inválido.', (value) => isValidCPF(value!)),
+    }),
+
+    birth: Yup.object().shape({
+      date: Yup.string()
+        .required('A Data de nascimento é obrigatório!')
+        .min(10, 'Data inválida')
+        .test('dateBirth', 'Data inválida', (value) => {
+          if (!value) return true;
+          const [day, month, year] = value?.split('/').map(Number);
+          const yearValid = year <= new Date().getFullYear();
+          return yearValid && isDateValid(value!);
+        }),
+    }),
+
+    category: Yup.object().shape({
+      _id: Yup.string().required('A Categoria é obrigatória!'),
+    }),
+
+    school: Yup.object().shape({
+      period: Yup.string().test('school.period', 'Período inválido!', (value) => {
+        if (!formikRef.current?.values.school.name) return true;
+        if (formikRef.current?.values.school.name && !value) return false;
+
+        return true;
+      }),
+    }),
+
+    isFederated: Yup.object().shape({
+      date: Yup.string().test('isFederated.date', 'Data inválida!', (value) => {
+        if (!formikRef.current?.values.isFederated.clubName) return true;
+        if (formikRef.current?.values.isFederated.clubName && !value) return false;
+
+        return value?.length === 4 && Number(value) <= new Date().getFullYear();
+      }),
+    }),
+
+    certificateValidity: Yup.object().shape({
+      date: Yup.string().test('isFederated.date', 'Data inválida', (value) => {
+        const certificateValidity = formikRef.current?.values.certificateValidity;
+        const hasCertificate = certificateValidity?.file || certificateValidity?.uri;
+
+        return !hasCertificate || (hasCertificate && isDateValid(value!) ? true : false);
+      }),
+    }),
+
+    mother: Yup.object().shape({
+      phone: Yup.string().test('mother.phone', 'Número inválido', (value) => !value || value?.length! >= 15),
+      rg: Yup.object().shape({
+        value: Yup.string().test('mother.rg.value', 'RG inválido', (value) => {
+          return !value || value.length === 12;
+        }),
+      }),
+      cpf: Yup.object().shape({
+        value: Yup.string().test('mother.cpf.value', 'CPF inválido.', (value) => isValidCPF(value!)),
+      }),
+    }),
+
+    father: Yup.object().shape({
+      phone: Yup.string().test('father.phone', 'Número inválido', (value) => !value || value?.length! >= 15),
+      rg: Yup.object().shape({
+        value: Yup.string().test('father.rg.value', 'RG inválido', (value) => {
+          return !value || value.length === 12;
+        }),
+      }),
+      cpf: Yup.object().shape({
+        value: Yup.string().test('father.cpf.value', 'CPF inválido.', (value) => isValidCPF(value!)),
+      }),
+    }),
+
+    address: Yup.object().shape({
+      road: Yup.string().required('A Rua é obrigatória!'),
+      number: Yup.string().required('O Número é obrigatório!'),
+      cep: Yup.string().required('O CEP é obrigatório!').min(9, 'CEP inválido'),
+    }),
+  });
+
   const handleChangePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.currentTarget.files?.[0]) return;
 
     const file = event.currentTarget.files?.[0];
-    const fileSizeLimit = 1 * 1024 * 1024; // 5 MB
+    const fileSizeLimit = 1 * 1024 * 1024; // 1 MB
 
     if (file.size > fileSizeLimit) {
-      alert('O arquivo selecionado excede o limite de tamanho de 1 MB.');
-      return;
+      return alert('O arquivo selecionado excede o limite de tamanho de 1 MB.');
     }
 
     formikRef.current?.setFieldValue('photo.file', file || null);
@@ -149,12 +140,15 @@ export function RegisterAthlete() {
     setTimeout(() => formikRef.current?.setFieldValue('photo', null), 0);
   };
 
-  const handleChangeFile = (name: string, certificate: File) => {
-    formikRef.current?.setFieldValue(name, certificate || null);
+  const handleChangeFile = (name: string, file: File) => {
+    formikRef.current?.setFieldValue(name, file || null);
   };
 
   const handleRemoveFile = (name: string) => {
-    if (name === 'certificateValidity.file') formikRef.current?.setFieldValue('certificateValidity.date', '');
+    if (name === 'certificateValidity.file') {
+      formikRef.current?.setFieldValue('certificateValidity.date', '');
+      formikRef.current?.setFieldError('certificateValidity.date', '');
+    }
     setTimeout(() => formikRef.current?.setFieldValue(name!, null), 0);
   };
 
@@ -165,19 +159,19 @@ export function RegisterAthlete() {
 
   const onPasteRg = (event: React.ClipboardEvent<HTMLInputElement>) => {
     const value = event.clipboardData.getData('text');
-    formikRef.current?.setFieldValue('rg', cleanRg(value));
+    formikRef.current?.setFieldValue(event.currentTarget.name, cleanRg(value));
   };
 
   const handleChangeRg = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    const { name, value } = event.target;
 
     if (value.includes('-x')) return;
-    formikRef.current?.setFieldValue('rg', rgMask(event.target.value));
+    formikRef.current?.setFieldValue(name, rgMask(event.target.value));
   };
 
   const handleChangeCpf = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    formikRef.current?.setFieldValue('cpf', cpfMask(value));
+    const { name, value } = event.target;
+    formikRef.current?.setFieldValue(name, cpfMask(value));
   };
 
   const handleChangeDate = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,8 +189,8 @@ export function RegisterAthlete() {
   };
 
   const handleChangePhone = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    formikRef.current?.setFieldValue(event.target.name, phoneMask(value));
+    const { name, value } = event.target;
+    formikRef.current?.setFieldValue(name, phoneMask(value));
   };
 
   const handleChangeCep = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,7 +201,11 @@ export function RegisterAthlete() {
   const handleChangeFederation = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
-    if (!value) formikRef.current?.setFieldValue('isFederated.date', '');
+    if (!value) {
+      formikRef.current?.setFieldValue('isFederated.date', '');
+      formikRef.current?.setFieldValue('isFederated.lastClub', false);
+    }
+
     formikRef.current?.setFieldValue(name, value);
   };
 
@@ -218,15 +216,36 @@ export function RegisterAthlete() {
     formikRef.current?.setFieldValue(name, value);
   };
 
+  const handleChangeCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+
+    if (name === 'health.haveProblem' && !checked && formikRef.current?.values.health.description) {
+      if (!confirm('Ao realizar esta ação você perderá a descrição abaixo, deseja continuar?')) return;
+      formikRef.current?.setFieldValue('health.description', '');
+    }
+
+    formikRef.current?.setFieldValue(name, checked);
+  };
+
   const onCreate = (formikValues: Athlete & Mode) => {
     const values = structuredClone(formikValues);
     const formData = new FormData();
 
     formData.append('photo', values.photo.file!);
     formData.append('certificate', values.certificateValidity.file!);
+    formData.append('rg', values.rg.file!);
+    formData.append('cpf', values.cpf.file!);
+    formData.append('address', values.address.file!);
+    formData.append('school', values.school.file!);
+    formData.append('birth', values.birth.file!);
 
     delete values.photo.file;
     delete values.certificateValidity.file;
+    delete values.rg.file;
+    delete values.cpf.file;
+    delete values.address.file;
+    delete values.school.file;
+    delete values.birth.file;
 
     formData.append('data', JSON.stringify(values));
 
@@ -259,8 +278,34 @@ export function RegisterAthlete() {
   };
 
   const handleSubmit = (formikValues: Athlete & Mode) => {
-    formikValues.mode === 'create' ? onCreate(formikValues) : onUpdate(formikValues);
+    validationSchema
+      .validate(formikValues, { abortEarly: false })
+      .then(() => {
+        formikValues.mode === 'create' ? onCreate(formikValues) : onUpdate(formikValues);
+      })
+      .catch((validationErrors) => {
+        validationErrors.inner.forEach((error: Yup.ValidationError) => {
+          formikRef.current?.setFieldError(error.path!, error.message);
+
+          if (!firstErrorFieldRef.current) {
+            const errorField = document.getElementsByName(error.path!)[0];
+            if (errorField) {
+              firstErrorFieldRef.current = errorField;
+            }
+          }
+        });
+
+        if (firstErrorFieldRef.current) {
+          firstErrorFieldRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorFieldRef.current = null;
+        }
+      });
   };
+
+  React.useEffect(() => {
+    if (categories === null) dispatch(actionsCategory.fetch({}));
+    return () => {};
+  }, []);
 
   React.useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -324,12 +369,11 @@ export function RegisterAthlete() {
       <Formik
         validateOnBlur={false}
         validateOnChange={false}
-        validationSchema={validationSchema}
         innerRef={formikRef}
-        initialValues={initialValues}
+        initialValues={initialValuesAthlete}
         onSubmit={handleSubmit}
       >
-        {({ values, errors }) => {
+        {({ values, errors, isValid, isSubmitting }) => {
           return (
             <Form className="w-full max-w-md mx-auto px-7">
               <small className="mb-2 font-normal text-sm text-black/70">Cadastrar novo atleta</small>
@@ -416,28 +460,33 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
-              <fieldset className="mt-3 grid items-end gap-2.5 grid-cols-1 desk:grid-cols-2">
-                <div style={{ height: 68 }}>
-                  <Input
-                    type="text"
-                    name="rg"
-                    value={values.rg.value}
-                    error={errors.rg?.value}
-                    onPaste={onPasteRg}
-                    onChange={handleChangeRg}
-                    placeholder="RG"
-                    className="py-8 desk:py-6"
-                    inputMode="numeric"
-                  />
-                </div>
-
-                <FileInput name="rg.file" value="" onChange={() => {}} onRemove={() => {}} />
-              </fieldset>
-
-              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+              <fieldset className="mt-5 grid-cols-1">
                 <Input
                   type="text"
-                  name="cpf"
+                  name="nickName"
+                  value={values.nickName}
+                  error={errors.nickName}
+                  placeholder="Apelido"
+                  className="capitalize py-8 desk:py-6"
+                />
+              </fieldset>
+
+              <fieldset className="mt-4 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <Input
+                  type="text"
+                  name="rg.value"
+                  value={values.rg.value}
+                  error={errors.rg?.value}
+                  onPaste={onPasteRg}
+                  onChange={handleChangeRg}
+                  placeholder="RG"
+                  className="py-8 desk:py-6"
+                  inputMode="numeric"
+                />
+
+                <Input
+                  type="text"
+                  name="cpf.value"
                   value={values.cpf.value}
                   error={errors.cpf?.value}
                   onChange={handleChangeCpf}
@@ -447,10 +496,10 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-4 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
-                  name="dateBirth"
+                  name="birth.date"
                   value={values.birth.date}
                   error={errors.birth?.date}
                   onChange={handleChangeDate}
@@ -461,20 +510,53 @@ export function RegisterAthlete() {
 
                 <Input
                   as="select"
-                  name="category.id"
+                  name="category._id"
                   error={errors.category}
                   value={values.category?._id}
                   onChange={handleChangeCategory}
-                  className={`h-[66px] desk:h-13  ${values.category?._id === '' ? '!text-black/70' : 'text-black'}`}
+                  className={`h-[66px] desk:h-13  ${
+                    errors.category ? 'text-primary' : values.category?.name === '' ? 'text-black/70' : 'text-black'
+                  }`}
                 >
                   <option className="hidden">Categoria</option>
                   {categories?.map((category) => {
-                    return <option value={category._id}>S{category.name}</option>;
+                    return (
+                      <option key={category._id} value={category._id}>
+                        S{category.name}
+                      </option>
+                    );
                   })}
                 </Input>
               </fieldset>
 
-              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+              <fieldset className="mt-4 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <Input
+                  type="text"
+                  name="school.name"
+                  value={values.school.name}
+                  onChange={handleChangeSchool}
+                  placeholder="Nome da escola"
+                  className="capitalize py-8 desk:py-6"
+                />
+
+                <Input
+                  as="select"
+                  name="school.period"
+                  value={values.school.period}
+                  error={errors.school?.period}
+                  disabled={!values.school.name}
+                  className={`h-[66px] desk:h-13 ${
+                    errors.school?.period ? 'text-primary' : values.school.period === '' ? '!text-black/70' : 'text-black'
+                  }`}
+                >
+                  <option className="hidden">Período</option>
+                  <option value="manha">Manhã</option>
+                  <option value="tarde">Tarde</option>
+                  <option value="noite">Noite</option>
+                </Input>
+              </fieldset>
+
+              <fieldset className="mt-4 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="isFederated.clubName"
@@ -497,64 +579,56 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
-              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
-                <Input
-                  type="text"
-                  name="school.name"
-                  value={values.school.name}
-                  onChange={handleChangeSchool}
-                  placeholder="Nome da escola"
-                  className="capitalize py-8 desk:py-6"
-                />
-
-                <Input
-                  as="select"
-                  name="school.period"
-                  value={values.school.period}
-                  disabled={!values.school.name}
-                  className={`h-[66px] desk:h-13 ${values.school.period === '' ? '!text-black/70' : 'text-black'}`}
-                >
-                  <option className="hidden">Período</option>
-                  <option value="manha">Manhã</option>
-                  <option value="tarde">Tarde</option>
-                  <option value="noite">Noite</option>
-                </Input>
-              </fieldset>
-
-              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-2">
-                <FileInput
-                  name="certificateValidity.file"
-                  value={values.certificateValidity.file || values.certificateValidity.uri}
-                  onChange={handleChangeFile}
-                  onRemove={handleRemoveFile}
-                />
-
-                <div style={{ height: 68 }}>
-                  <Input
-                    name="certificateValidity.date"
-                    value={values.certificateValidity.date}
-                    error={errors.certificateValidity?.date}
-                    disabled={!values.certificateValidity.file && !values.certificateValidity.uri}
-                    onChange={handleChangeDate}
-                    placeholder="Validade"
-                    className="py-8 desk:py-6"
-                    inputMode="numeric"
+              <fieldset className="w-full mt-4   grid gap-2.5 grid-cols-1 ">
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm ${values.isFederated.clubName ? 'text-black/80' : 'text-black/40'}`}>
+                    Ultimo clube federado?
+                  </span>
+                  <Switch
+                    color="blue"
+                    name="isFederated.lastClub"
+                    checked={values.isFederated?.clubName ? values.isFederated.lastClub : false}
+                    onChange={handleChangeCheck}
+                    disabled={!values.isFederated.clubName}
                   />
                 </div>
               </fieldset>
 
-              <fieldset className="mt-5 desk:mt-2 grid gap-2.5 items-end grid-cols-1 desk:grid-cols-2">
-                <label>
-                  <span className="mb-2.5 font-normal text-sm text-black">Contato</span>
+              <hr className="my-6 border-gray-800/10" />
 
-                  <Input
-                    type="text"
-                    name="mother.name"
-                    value={values.mother.name}
-                    placeholder="Nome da mãe"
-                    className="capitalize py-8 desk:py-6"
+              <fieldset className="w-full grid gap-2.5 grid-cols-1 ">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-black/80">Tem algum problema de saúde?</span>
+                  <Switch
+                    color="blue"
+                    name="health.haveProblem"
+                    checked={values.health.haveProblem}
+                    onChange={handleChangeCheck}
                   />
-                </label>
+                </div>
+
+                <div className="mt-1.5">
+                  <Input
+                    as="textarea"
+                    name="health.description"
+                    value={values.health.description}
+                    disabled={!values.health.haveProblem}
+                    placeholder="Problemas de saúde:"
+                    className="flex w-full h-24 px-4 py-3 rounded-base border border-border-input focus:ring-red-500"
+                  />
+                </div>
+              </fieldset>
+
+              <span className="mt-7 mb-4 font-normal text-sm text-black">Contato</span>
+
+              <fieldset className="grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <Input
+                  type="text"
+                  name="mother.name"
+                  value={values.mother.name}
+                  placeholder="Nome da mãe"
+                  className="capitalize py-8 desk:py-6"
+                />
 
                 <Input
                   name="mother.phone"
@@ -564,6 +638,28 @@ export function RegisterAthlete() {
                   placeholder="Contato da mãe"
                   className="py-8 desk:py-6"
                   inputMode="numeric"
+                />
+              </fieldset>
+
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <Input
+                  type="text"
+                  name="mother.rg.value"
+                  value={values.mother.rg.value}
+                  error={errors.mother?.rg?.value}
+                  onChange={handleChangeRg}
+                  placeholder="RG da mãe"
+                  className="capitalize py-8 desk:py-6"
+                />
+
+                <Input
+                  type="text"
+                  name="mother.cpf.value"
+                  value={values.mother.cpf.value}
+                  error={errors.mother?.cpf?.value}
+                  onChange={handleChangeCpf}
+                  placeholder="CPF da mãe"
+                  className="capitalize py-8 desk:py-6"
                 />
               </fieldset>
 
@@ -587,6 +683,28 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
+                <Input
+                  type="text"
+                  name="father.rg.value"
+                  value={values.father.rg.value}
+                  onChange={handleChangeRg}
+                  error={errors.father?.rg?.value}
+                  placeholder="RG do pai"
+                  className="capitalize py-8 desk:py-6"
+                />
+
+                <Input
+                  type="text"
+                  name="father.cpf.value"
+                  value={values.father.cpf.value}
+                  onChange={handleChangeCpf}
+                  error={errors.father?.cpf?.value}
+                  placeholder="CPF do pai"
+                  className="capitalize py-8 desk:py-6"
+                />
+              </fieldset>
+
               <fieldset className="mt-3">
                 <Input
                   type="email"
@@ -599,22 +717,20 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr' }} className="mt-7 grid gap-2.5 items-end">
-                <label>
-                  <span className="mb-2.5 font-normal text-sm text-black">Endereço</span>
+              <span className="mt-7 mb-4 font-normal text-sm text-black">Endereço</span>
 
-                  <Input
-                    type="text"
-                    name="address.road"
-                    error={errors.address?.road}
-                    value={values.address.road}
-                    placeholder="Rua"
-                    className="py-8 desk:py-6"
-                  />
-                </label>
+              <fieldset className="grid gap-2.5 grid-cols-1">
+                <Input
+                  type="text"
+                  name="address.road"
+                  error={errors.address?.road}
+                  value={values.address.road}
+                  placeholder="Rua"
+                  className="py-8 desk:py-6"
+                />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr 1fr' }} className="mt-3 grid gap-2.5">
+              <fieldset className="mt-3 grid gap-2.5 grid-cols-1 desk:grid-cols-2">
                 <Input
                   type="text"
                   name="address.number"
@@ -636,9 +752,86 @@ export function RegisterAthlete() {
                 />
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr' }} className="mt-7 grid gap-2.5">
-                <span className="mb-2.5 font-normal text-sm text-black">Situação Financeira</span>
+              <span className="mt-7 mb-4 font-normal text-sm text-black">Documentos</span>
 
+              <fieldset className="grid gap-2.5 items-end grid-cols-2">
+                <div className="mb-[18px]">
+                  <FileInput
+                    label="Atestado médico"
+                    name="certificateValidity.file"
+                    value={values.certificateValidity.file || values.certificateValidity.uri}
+                    onChange={handleChangeFile}
+                    onRemove={handleRemoveFile}
+                  />
+                </div>
+
+                <div className="h-[84px] desk:h-[68px]">
+                  <Input
+                    name="certificateValidity.date"
+                    value={values.certificateValidity.date}
+                    error={errors.certificateValidity?.date}
+                    disabled={!values.certificateValidity.file && !values.certificateValidity.uri}
+                    onChange={handleChangeDate}
+                    placeholder="Validade do atestado"
+                    className="py-8 desk:py-6"
+                    inputMode="numeric"
+                  />
+                </div>
+              </fieldset>
+
+              <fieldset className="mt-2.5 grid gap-2.5 items-end grid-cols-1">
+                <FileInput
+                  label="RG"
+                  name="rg.file"
+                  value={values.rg.file || values.rg.uri}
+                  onChange={handleChangeFile}
+                  onRemove={handleRemoveFile}
+                />
+              </fieldset>
+
+              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-1">
+                <FileInput
+                  label="CPF"
+                  name="cpf.file"
+                  value={values.cpf.file || values.rg.uri}
+                  onChange={handleChangeFile}
+                  onRemove={handleRemoveFile}
+                />
+              </fieldset>
+
+              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-1">
+                <FileInput
+                  label="Comprovante de residência"
+                  name="address.file"
+                  value={values.address.file || values.address.uri}
+                  onChange={handleChangeFile}
+                  onRemove={handleRemoveFile}
+                />
+              </fieldset>
+
+              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-1">
+                <FileInput
+                  label="Escolaridade"
+                  name="school.file"
+                  value={values.school.file || values.school.uri}
+                  onChange={handleChangeFile}
+                  onRemove={handleRemoveFile}
+                />
+              </fieldset>
+
+              <fieldset className="mt-7 grid gap-2.5 items-end grid-cols-1">
+                <FileInput
+                  label="Certidão de nascimento"
+                  name="birth.file"
+                  value={values.birth.file || values.birth.uri}
+                  onChange={handleChangeFile}
+                  onRemove={handleRemoveFile}
+                />
+              </fieldset>
+
+              <span className="mt-7 mb-5 font-normal text-sm text-black">Situação Financeira</span>
+
+              <fieldset className="grid gap-2.5 grid-cols-1">
                 <label className="mb-2 flex items-center gap-3 select-none">
                   <Input
                     type="radio"
@@ -660,14 +853,14 @@ export function RegisterAthlete() {
                 </label>
               </fieldset>
 
-              <fieldset style={{ gridTemplateColumns: '1fr' }} className="mt-7 grid gap-2.5">
+              <fieldset className="mt-7 grid gap-2.5 grid-cols-1">
                 <Input
                   as="textarea"
                   name="situation.observation"
                   id="description"
                   value={values.situation.observation}
                   placeholder="Observação:"
-                  className="flex w-full h-32 px-4 py-3 rounded-base border border-border-input focus:ring-red-500"
+                  className="flex w-full h-24 px-4 py-3 rounded-base border border-border-input focus:ring-red-500"
                 />
               </fieldset>
 

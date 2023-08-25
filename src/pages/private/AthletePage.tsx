@@ -5,11 +5,10 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAge } from 'utils/getAge';
 import { Helmet } from 'react-helmet';
-import { AthleteViewer, Button, ConfirmModal, Drawer, Input, ShowIf } from 'components';
+import { AthleteViewer, Button } from 'components';
 import { DrawerProps } from 'components/atoms/Drawer';
-import { FaUserCircle } from 'react-icons/fa';
 import * as actionsAthlete from 'store/athlete/actions';
-import { ModalProps } from 'components/atoms/Modal';
+import * as actionsCategory from 'store/category/actions';
 
 export function AthletePage() {
   const dispatch = useDispatch();
@@ -36,13 +35,13 @@ export function AthletePage() {
         (athlete) =>
           athlete.situation.status === 'irregular' &&
           (athlete.name.toLowerCase().includes(searchValue?.toLowerCase()!) ||
-            athlete.cpf.replace(/\D/g, '').includes(searchValue!))
+            athlete.cpf.value.replace(/\D/g, '').includes(searchValue!))
       );
     } else {
       result = athletes?.filter(
         (athlete) =>
           athlete.name.toLowerCase().includes(searchValue?.toLowerCase()!) ||
-          athlete.cpf.replace(/\D/g, '').includes(searchValue!)
+          athlete.cpf.value.replace(/\D/g, '').includes(searchValue!)
       );
     }
 
@@ -72,6 +71,8 @@ export function AthletePage() {
   };
 
   React.useEffect(() => {
+    if (categories === null) dispatch(actionsCategory.fetch({}));
+
     if (athletes === null) dispatch(actionsAthlete.fetch({ callBack: (athletes) => setFiltered(athletes) }));
     else setFiltered(athletes);
     return () => {};
@@ -202,7 +203,7 @@ export function AthletePage() {
 
           <ul className="w-full h-full">
             {filtered?.map((athlete) => {
-              const idade = getAge(athlete.dateBirth);
+              const idade = getAge(athlete.birth.date);
               const handleClickView = () => drawerRef.current?.openDrawer(athlete);
 
               return (
@@ -220,7 +221,7 @@ export function AthletePage() {
                     </strong>
                   </div>
 
-                  <span className="text-base text-black/70 hidden desk:block">{athlete.cpf}</span>
+                  <span className="text-base text-black/70 hidden desk:block">{athlete.cpf.value}</span>
                   <span className="text-base text-black/70 hidden desk:block">{idade}</span>
                   <span
                     className={`font-semibold text-base hidden desk:block ${

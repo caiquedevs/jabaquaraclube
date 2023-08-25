@@ -82,6 +82,10 @@ export function athleteReducer(state = initialState, action: any) {
       return newState;
     }
 
+    case 'LOGOUT_USER': {
+      return initialState;
+    }
+
     default: {
       return state;
     }
