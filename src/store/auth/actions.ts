@@ -1,15 +1,33 @@
 import { authTypes } from 'store/redux/types';
 import { Auth } from 'interfaces/auth';
 
-export function registerRequest(payload: RegisterRequestProps) {
+export function fetch(payload: fetchProps) {
+  return {
+    type: authTypes.FETCH_REQUEST,
+    payload,
+  };
+}
+
+export function fetchSuccess(payload: fetchProps) {
+  return {
+    type: authTypes.FETCH_SUCCESS,
+    payload,
+  };
+}
+
+export function fetchFailure() {
+  return { type: authTypes.FETCH_FAILURE };
+}
+
+export function register(payload: RegisterRequestProps) {
   return {
     type: authTypes.REGISTER_REQUEST,
     payload,
   };
 }
 
-export function registerSuccess() {
-  return { type: authTypes.REGISTER_SUCCESS };
+export function registerSuccess(payload: Auth) {
+  return { type: authTypes.REGISTER_SUCCESS, payload };
 }
 
 export function registerFailure() {
@@ -43,13 +61,28 @@ export function logoutUser() {
 }
 
 // Interfaces actions ----------------------------
+export interface fetchProps {
+  callBack?: (values: Auth[]) => void;
+}
+
+export interface createProps {
+  data: Partial<Auth>;
+  callBack?: () => void;
+}
+
+export interface updateProps {
+  data: Partial<Auth>;
+  callBack?: () => void;
+}
+
+export interface removeProps {
+  data: Partial<Auth>;
+  callBack?: () => void;
+}
+
 export interface RegisterRequestProps {
   callBack: (response: any) => void;
-  data: {
-    email: string;
-    name: string;
-    password: string;
-  };
+  data: Partial<Auth>;
 }
 
 export interface RegisterSucessProps {

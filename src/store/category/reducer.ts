@@ -1,81 +1,81 @@
-import { athleteTypes } from 'store/redux/types';
-import { Athlete } from 'interfaces/athlete';
+import { categoryTypes } from 'store/redux/types';
+import { Category } from 'interfaces/category';
 
 const initialState = {
-  athletes: null as Athlete[] | null,
+  categories: null as Category[] | null,
   loading: { fetch: false, create: false, update: false, remove: false },
 };
 
-export function athleteReducer(state = initialState, action: any) {
+export function categoryReducer(state = initialState, action: any) {
   switch (action.type) {
-    case athleteTypes.FETCH_REQUEST: {
+    case categoryTypes.FETCH_REQUEST: {
       const newState = { ...state };
       newState.loading.fetch = true;
       return newState;
     }
 
-    case athleteTypes.FETCH_SUCCESS: {
+    case categoryTypes.FETCH_SUCCESS: {
       const newState = { ...state };
 
-      newState.athletes = action.payload;
+      newState.categories = action.payload;
       newState.loading.fetch = false;
 
       return newState;
     }
 
-    case athleteTypes.CREATE_REQUEST: {
+    case categoryTypes.CREATE_REQUEST: {
       const newState = { ...state };
       newState.loading.create = true;
       return newState;
     }
 
-    case athleteTypes.CREATE_SUCCESS: {
+    case categoryTypes.CREATE_SUCCESS: {
       const newState = { ...state };
 
-      if (newState.athletes) newState.athletes.push(action.payload);
-      else newState.athletes = [action.payload];
+      if (newState.categories) newState.categories.push(action.payload);
+      else newState.categories = [action.payload];
 
       newState.loading.create = false;
       return newState;
     }
 
-    case athleteTypes.CREATE_FAILURE: {
+    case categoryTypes.CREATE_FAILURE: {
       const newState = { ...state };
       newState.loading.create = false;
       return newState;
     }
 
-    case athleteTypes.UPDATE_REQUEST: {
+    case categoryTypes.UPDATE_REQUEST: {
       const newState = { ...state };
       newState.loading.update = true;
       return newState;
     }
 
-    case athleteTypes.UPDATE_SUCCESS: {
+    case categoryTypes.UPDATE_SUCCESS: {
       const newState = { ...state };
 
       delete action.payload.oldUri;
 
-      const athleteIndex = newState.athletes?.findIndex((athlete) => athlete._id === action.payload._id);
-      newState.athletes![athleteIndex!] = { ...newState.athletes?.[athleteIndex!]!, ...action.payload };
+      const categoryIndex = newState.categories?.findIndex((category) => category._id === action.payload._id);
+      newState.categories![categoryIndex!] = { ...newState.categories?.[categoryIndex!]!, ...action.payload };
       newState.loading.update = false;
 
       return newState;
     }
 
-    case athleteTypes.REMOVE_REQUEST: {
+    case categoryTypes.REMOVE_REQUEST: {
       const newState = { ...state };
       newState.loading.remove = true;
       return newState;
     }
 
-    case athleteTypes.REMOVE_SUCCESS: {
+    case categoryTypes.REMOVE_SUCCESS: {
       const newState = { ...state };
 
-      if (!newState.athletes) return newState;
+      if (!newState.categories) return newState;
 
       console.log('action.payload._id', action.payload._id);
-      newState.athletes = newState.athletes?.filter((athlete) => athlete._id !== action.payload._id);
+      newState.categories = newState.categories?.filter((category) => category._id !== action.payload._id);
       console.log('newState', newState);
       newState.loading.remove = false;
 

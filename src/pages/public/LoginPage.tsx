@@ -39,15 +39,9 @@ export function LoginPage() {
   };
 
   const handleSubmit = (values: typeof initialValues) => {
-    // if (!captcha) toast.warn('ReCAPTCHA inválido!');
-    // else
-    dispatch(actionsLogin.loginRequest({ callBack: callbackLogin, data: values }));
+    if (!captcha) toast.warn('ReCAPTCHA inválido!');
+    else dispatch(actionsLogin.loginRequest({ callBack: callbackLogin, data: values }));
   };
-
-  React.useEffect(() => {
-    dispatch({ type: 'RESET_LOADINGS' });
-    return () => {};
-  }, []);
 
   return (
     <main className="w-full h-full py-10 flex flex-col items-center desk:justify-center desk:bg-none bg-[url('/bg-mobile.jpg')] bg-no-repeat bg-cover overflow-y-auto ">
@@ -69,12 +63,12 @@ export function LoginPage() {
 
                 <div className="w-full mt-11 desk:mt-0 flex flex-col gap-3">
                   <Input
-                    placeholder="Informe seu Email"
                     type="email"
                     name="email"
                     required={true}
+                    placeholder="Informe seu Email"
                     value={values.email}
-                    className="w-full desk:py-6 py-8 bg-slate-700 text-white border-transparent desk:border-slate-300 placeholder:text-white/60 placeholder:text-lg desk:bg-white desk:text-black/80 desk:placeholder:text-base desk:placeholder:text-black/60"
+                    className="py-8 desk:py-6"
                   />
 
                   <Input
@@ -85,19 +79,19 @@ export function LoginPage() {
                     required={true}
                     value={values.password}
                     minLength={8}
-                    className="w-full desk:py-6 py-8 bg-slate-700 text-white border-transparent desk:border-slate-300 placeholder:text-white/60 placeholder:text-lg desk:bg-white desk:text-black/80 desk:placeholder:text-base desk:placeholder:text-black/60"
+                    className="py-8 desk:py-6"
                   />
                 </div>
 
-                {/* <div className="w-full mt-4" style={{ transform: 'scale(1.5)', transformOrigin: '0 0' }}>
+                <div className="w-full mt-4" style={{ transform: 'scale(1)', transformOrigin: '0 0' }}>
                   <ReCAPTCHA sitekey={RECAPTCHA_KEY} onChange={handleChangeCaptcha} />
-                </div> */}
+                </div>
 
-                <footer className="w-full mt-9 flex flex-col gap-5 absolute desk:relative bottom-0">
+                <footer className="w-full mt-4 flex flex-col gap-5 absolute desk:relative bottom-0">
                   <Button
                     type="submit"
                     loading={loading.login}
-                    // disabled={loading.login || !captcha}
+                    disabled={loading.login || !captcha}
                     className="w-full py-5 desk:py-3 bg-[#da251c] font-normal normal-case text-xl desk:text-base rounded-md"
                   >
                     {loading.login ? 'Entrando...' : 'Entrar'}

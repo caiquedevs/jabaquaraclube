@@ -6,7 +6,7 @@ export default function reduxPersist(reducers: any) {
     {
       key: 'jabaquaraclube',
       storage,
-      whitelist: ['authReducer'],
+      whitelist: ['authReducer.auth'],
     },
     reducers
   );

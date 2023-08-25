@@ -5,67 +5,74 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAge } from 'utils/getAge';
 import { Helmet } from 'react-helmet';
-import { AthleteViewer, Button, ConfirmModal, Drawer, ShowIf } from 'components';
+import { AthleteViewer, Button } from 'components';
 import { DrawerProps } from 'components/atoms/Drawer';
-import { FaUserCircle } from 'react-icons/fa';
 import * as actionsAthlete from 'store/athlete/actions';
-import { ModalProps } from 'components/atoms/Modal';
+import * as actionsCategory from 'store/category/actions';
 
 export function AthletePage() {
   const dispatch = useDispatch();
 
   const barRef = React.useRef<HTMLSpanElement>(null);
+  const selectRef = React.useRef<HTMLSelectElement>(null);
   const inputSearchRef = React.useRef<HTMLInputElement>(null);
   const drawerRef = React.useRef<DrawerProps>(null);
 
   const { athletes, loading } = useAppSelector((state) => state.athleteReducer);
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.categoryReducer);
 
   const [filtered, setFiltered] = React.useState<Athlete[] | null>([]);
 
-  const handleChangeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const currentFilter = inputSearchRef.current?.getAttribute('current-filter');
+  const filterApply = () => {
+    const currentStatus = inputSearchRef.current?.getAttribute('status');
+    const searchValue = inputSearchRef.current?.value;
+    const categoryValue = selectRef.current?.value;
 
-    let result = [] as Athlete[] | undefined;
+    let result = [] as Athlete[] | undefined | null;
 
-    if (currentFilter === 'irregular') {
+    if (currentStatus === 'irregular') {
       result = athletes?.filter(
         (athlete) =>
           athlete.situation.status === 'irregular' &&
-          (athlete.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-            athlete.cpf.replace(/\D/g, '').includes(event.target.value))
+          (athlete.name.toLowerCase().includes(searchValue?.toLowerCase()!) ||
+            athlete.cpf.value.replace(/\D/g, '').includes(searchValue!))
       );
     } else {
       result = athletes?.filter(
         (athlete) =>
-          athlete.name.toLowerCase().includes(event.target.value.toLowerCase()) ||
-          athlete.cpf.replace(/\D/g, '').includes(event.target.value)
+          athlete.name.toLowerCase().includes(searchValue?.toLowerCase()!) ||
+          athlete.cpf.value.replace(/\D/g, '').includes(searchValue!)
       );
+    }
+
+    if (categoryValue) {
+      result = result?.filter((athlete) => !categoryValue || athlete.category?.name === categoryValue);
     }
 
     setFiltered(result!);
   };
 
   const handleClickFilterAll = (event: React.MouseEvent<HTMLButtonElement>) => {
-    inputSearchRef.current!.value = '';
-    inputSearchRef.current!.setAttribute('current-filter', 'all');
+    inputSearchRef.current!.setAttribute('status', 'all');
 
     barRef.current!.style.width = event.currentTarget.clientWidth + 3 + 'px';
     barRef.current!.style.left = event.currentTarget.offsetLeft + 'px';
 
-    setFiltered(athletes!);
+    filterApply();
   };
 
   const handleClickFilter = (event: React.MouseEvent<HTMLButtonElement>) => {
-    inputSearchRef.current!.value = '';
-    inputSearchRef.current!.setAttribute('current-filter', 'irregular');
+    inputSearchRef.current!.setAttribute('status', 'irregular');
 
     barRef.current!.style.width = event.currentTarget.clientWidth + 'px';
     barRef.current!.style.left = event.currentTarget.offsetLeft + 'px';
 
-    setFiltered(athletes?.filter((athlete) => athlete.situation.status === 'irregular')!);
+    filterApply();
   };
 
   React.useEffect(() => {
+    if (categories === null) dispatch(actionsCategory.fetch({}));
+
     if (athletes === null) dispatch(actionsAthlete.fetch({ callBack: (athletes) => setFiltered(athletes) }));
     else setFiltered(athletes);
     return () => {};
@@ -140,14 +147,32 @@ export function AthletePage() {
       </header>
 
       <section style={{ maxWidth: '938px' }} className="w-full h-full pt-4 desk:pt-5 mx-auto flex flex-col">
-        <div className="px-5 desk:px-0">
+        <div className="px-5 desk:px-0 flex">
+          <select
+            ref={selectRef}
+            onChange={filterApply}
+            className="box px-4 w-36 h-[66px] rounded-l-md !border-r-0 desk:h-13  text-black/70"
+          >
+            <option value="" className="hidden">
+              Categorias
+            </option>
+            <option value="">Todas</option>
+            {categories?.map((category) => {
+              return (
+                <option key={category._id} value={category.name}>
+                  S{category.name}
+                </option>
+              );
+            })}
+          </select>
+
           <input
             ref={inputSearchRef}
             type="search"
             name="search"
-            onChange={handleChangeSearch}
+            onChange={filterApply}
             placeholder="Pesquisar atleta"
-            className="box w-full px-4 py-5 placeholder:text-base desk:placeholder:text-sm desk:py-3 !rounded-md"
+            className="box w-full px-4 py-5 border-l-0 placeholder:text-base desk:placeholder:text-sm desk:py-3 !rounded-r-md"
           />
         </div>
 
@@ -169,7 +194,7 @@ export function AthletePage() {
           ) : null}
 
           {!loading.fetch && filtered && filtered.length === 0 ? (
-            <div className="px-7 py-4 desk:py-[26px] flex items-center justify-between border-y border-border-primary">
+            <div className="px-7 py-4 desk:py-[24px] flex items-center justify-between border-t border-border-primary">
               <div className="flex items-center gap-7">
                 <span className="text-base text-black/80">Nenhum resultado encontrado</span>
               </div>
@@ -178,7 +203,7 @@ export function AthletePage() {
 
           <ul className="w-full h-full">
             {filtered?.map((athlete) => {
-              const idade = getAge(athlete.dateBirth);
+              const idade = getAge(athlete.birth.date);
               const handleClickView = () => drawerRef.current?.openDrawer(athlete);
 
               return (
@@ -188,7 +213,7 @@ export function AthletePage() {
                 >
                   <div className="flex items-center gap-7">
                     <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-300 animate-fadeIn">
-                      <span className="font-semibold text-base text-black/70 uppercase">{athlete.category}</span>
+                      <span className="font-semibold text-base text-black/70 uppercase">S{athlete.category?.name}</span>
                     </div>
 
                     <strong className="min-w-[300px] font-semibold text-[17px] desk:text-base text-black/80 capitalize animate-fadeIn">
@@ -196,7 +221,7 @@ export function AthletePage() {
                     </strong>
                   </div>
 
-                  <span className="text-base text-black/70 hidden desk:block">{athlete.cpf}</span>
+                  <span className="text-base text-black/70 hidden desk:block">{athlete.cpf.value}</span>
                   <span className="text-base text-black/70 hidden desk:block">{idade}</span>
                   <span
                     className={`font-semibold text-base hidden desk:block ${
@@ -224,8 +249,8 @@ export function AthletePage() {
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
                           d="M21.4549 5.41601C21.5499 5.56022 21.5922 5.7328 21.5747 5.9046C21.5573 6.0764 21.481 6.23691 21.3589 6.35901L12.1659 15.551C12.0718 15.645 11.9545 15.7123 11.8259 15.746L7.99689 16.746C7.87032 16.779 7.73732 16.7784 7.61109 16.7441C7.48485 16.7098 7.36978 16.6431 7.27729 16.5506C7.18479 16.4581 7.1181 16.3431 7.08382 16.2168C7.04955 16.0906 7.04888 15.9576 7.08189 15.831L8.08189 12.003C8.11109 11.8881 8.16616 11.7814 8.24289 11.691L17.4699 2.47001C17.6105 2.32956 17.8011 2.25067 17.9999 2.25067C18.1986 2.25067 18.3893 2.32956 18.5299 2.47001L21.3589 5.29801C21.3948 5.33402 21.4269 5.37355 21.4549 5.41601ZM19.7679 5.82801L17.9999 4.06101L9.48189 12.579L8.85689 14.972L11.2499 14.347L19.7679 5.82801Z"
                           fill="black"
                         />
