@@ -15,6 +15,7 @@ import { Mode } from 'interfaces/mode';
 import { Auth } from 'interfaces/auth';
 
 import * as actionsAuth from 'store/auth/actions';
+import * as actionsCategory from 'store/category/actions';
 
 const initialValues: Auth & Mode = {
   mode: 'create',
@@ -23,6 +24,7 @@ const initialValues: Auth & Mode = {
   password: '',
   categories: [] as string[],
   type: 'user',
+  active: true,
 };
 
 export function RegisterAcess() {
@@ -33,7 +35,7 @@ export function RegisterAcess() {
   const formikRef = React.useRef<FormikProps<typeof initialValues>>(null);
 
   const { categories, loading: loadingCategories } = useAppSelector((state) => state.categoryReducer);
-  const { loading, users } = useAppSelector((state) => state.authReducer);
+  const { loading, users, auth } = useAppSelector((state) => state.authReducer);
 
   const [pageTitle, setPageTitle] = React.useState('');
 
@@ -65,6 +67,18 @@ export function RegisterAcess() {
     formikRef.current?.setFieldValue('categories', [...oldCategories!, category]);
   };
 
+  const handleClickToogleAcess = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const user = structuredClone(formikRef.current?.values);
+    delete user?.mode;
+
+    const callBack = () => {
+      toast.success('Acesso alterado com sucesso!', { toastId: 'toogle-user' });
+      navigate('/access');
+    };
+
+    dispatch(actionsAuth.remove({ data: { ...user, active: !user?.active }, callBack }));
+  };
+
   const onCreate = (formikValues: Auth & Mode) => {
     const values = structuredClone(formikValues);
 
@@ -80,11 +94,11 @@ export function RegisterAcess() {
     const values = structuredClone(formikValues);
 
     const callBack = () => {
-      toast.success('Dados atualizados com sucesso!', { toastId: 'update-athlete' });
-      navigate('/athletes');
+      toast.success('Dados atualizados com sucesso!', { toastId: 'update-user' });
+      navigate('/access');
     };
 
-    // dispatch(actionsAuth.update({ data: values, callBack }));
+    dispatch(actionsAuth.update({ data: values, callBack }));
   };
 
   const handleSubmit = (formikValues: Auth & Mode) => {
@@ -92,6 +106,10 @@ export function RegisterAcess() {
   };
 
   React.useEffect(() => {
+    if (auth.type === 'user') return navigate('/home');
+
+    if (categories === null) dispatch(actionsCategory.fetch({}));
+
     const queryParams = new URLSearchParams(location.search);
     const userId = queryParams.get('id');
 
@@ -113,6 +131,8 @@ export function RegisterAcess() {
     return () => {};
   }, []);
 
+  if (auth.type === 'user') return <></>;
+
   return (
     <main className="w-full h-full py-9 overflow-y-auto">
       <Helmet>
@@ -121,7 +141,7 @@ export function RegisterAcess() {
 
       <ShowIf
         as="section"
-        show={loading.fetch}
+        show={loading.fetch || loadingCategories.fetch}
         className="w-full h-screen flex items-center justify-center fixed top-0 left-0 z-50 bg-slate-950/70"
       >
         <svg
@@ -253,6 +273,18 @@ export function RegisterAcess() {
                     : 'Salvar alterações'}
                 </span>
               </Button>
+
+              <ShowIf show={values.mode === 'update'}>
+                <Button
+                  type="button"
+                  loading={loading.remove}
+                  disabled={loading.create || loading.update || loading.remove}
+                  onClick={handleClickToogleAcess}
+                  className="py-3 mt-2  bg-transparent border border-slate-300 rounded-md normal-case text-sm font-normal text-black/60"
+                >
+                  {values.active ? 'Desativar acesso' : 'Ativar acesso'}
+                </Button>
+              </ShowIf>
             </Form>
           );
         }}

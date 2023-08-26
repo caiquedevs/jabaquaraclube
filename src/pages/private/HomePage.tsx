@@ -112,7 +112,6 @@ export function HomePage() {
           <li className="block desk:hidden">
             <button
               type="button"
-              onClick={handleClickLogout}
               className="box w-full py-6 desk:py-4 px-6 rounded-lg flex items-center gap-5 bg-slate-200 border-2 border-black cursor-default desk:cursor-pointer"
             >
               <img src="/presenceList.svg" alt="lista icon" />

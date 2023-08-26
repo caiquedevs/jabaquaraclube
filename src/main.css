@@ -219,3 +219,16 @@ select:disabled {
 .backdrop-blur-sm {
   @apply fixed top-0 left-0;
 }
+
+.Toastify {
+  z-index: 99999;
+}
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
+  width: 400px;
+}
+
+div[data-floating-ui-portal] {
+  z-index: 9999999999; /* Defina o z-index desejado aqui */
+  /* Outros estilos que você deseja aplicar */
+}
