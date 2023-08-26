@@ -337,7 +337,7 @@ export function RegisterAthlete() {
 
       <ShowIf
         as="section"
-        show={loading.fetch}
+        show={loading.fetch || categoriesLoading.fetch}
         className="w-full h-screen flex items-center justify-center fixed top-0 left-0 z-50 bg-slate-950/70"
       >
         <svg

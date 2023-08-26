@@ -150,11 +150,12 @@ export function AthletePage() {
         <div className="px-5 desk:px-0 flex">
           <select
             ref={selectRef}
+            disabled={categoriesLoading.fetch}
             onChange={filterApply}
-            className="box px-4 w-36 h-[66px] rounded-l-md !border-r-0 desk:h-13  text-black/70"
+            className="box px-4 w-44 h-[66px] rounded-l-md !border-r-0 desk:h-13  text-black/70"
           >
             <option value="" className="hidden">
-              Categorias
+              {categoriesLoading.fetch ? 'Carregando...' : 'Categorias'}
             </option>
             <option value="">Todas</option>
             {categories?.map((category) => {
@@ -211,7 +212,7 @@ export function AthletePage() {
                   key={athlete._id}
                   className="px-7 py-2.5 desk:py-4 flex items-center justify-between border-t border-border-primary select-none"
                 >
-                  <div className="flex items-center gap-7">
+                  <div className="flex items-center gap-4 desk:gap-7">
                     <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-300 animate-fadeIn">
                       <span className="font-semibold text-base text-black/70 uppercase">S{athlete.category?.name}</span>
                     </div>

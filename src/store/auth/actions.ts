@@ -34,6 +34,36 @@ export function registerFailure() {
   return { type: authTypes.REGISTER_FAILURE };
 }
 
+export function update(payload: updateProps) {
+  return {
+    type: authTypes.CHANGE_USER_REQUEST,
+    payload,
+  };
+}
+
+export function updateSuccess(payload: Auth) {
+  return { type: authTypes.CHANGE_USER_SUCCESS, payload };
+}
+
+export function updateFailure() {
+  return { type: authTypes.CHANGE_USER_FAILURE };
+}
+
+export function remove(payload: removeProps) {
+  return {
+    type: authTypes.REMOVE_REQUEST,
+    payload,
+  };
+}
+
+export function removeSuccess(payload: Auth) {
+  return { type: authTypes.REMOVE_SUCCESS, payload };
+}
+
+export function removeFailure() {
+  return { type: authTypes.REMOVE_FAILURE };
+}
+
 export function loginRequest(payload: LoginRequestProps) {
   return {
     type: authTypes.LOGIN_REQUEST,

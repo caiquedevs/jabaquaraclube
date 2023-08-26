@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAge } from 'utils/getAge';
 import * as actionsAthlete from 'store/athlete/actions';
+import { DownloadButton } from 'components/atoms/DownloadButton';
 
 type Props = {
   drawerRef: React.RefObject<DrawerProps>;
@@ -57,7 +58,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                   </button>
                 </div>
 
-                <header className="w-full px-10 pt-10 desk:py-8 flex flex-col desk:flex-row items-center justify-between desk:bg-sky-50 rounded-xl">
+                <header className="w-full px-10 pt-10 desk:py-7 desk:mt-2 flex flex-col desk:flex-row items-center justify-between desk:bg-sky-50 rounded-xl">
                   <figure className="flex flex-col desk:flex-row items-center gap-4 desk:gap-10">
                     <ShowIf show={athlete?.photo.uri}>
                       <img
@@ -72,9 +73,11 @@ export function AthleteViewer({ drawerRef }: Props) {
                     </ShowIf>
 
                     <figcaption className="flex flex-col items-center desk:items-start">
-                      <span className="font-bold text-xl text-primary capitalize">{athlete?.name}</span>
+                      <span className="font-bold text-lg text-primary capitalize">
+                        {athlete?.name} {athlete?.nickName ? `- (${athlete.nickName})` : ''}
+                      </span>
                       <span className="mt-1 text-base text-black/60">
-                        {idade} - S{athlete?.category?.name}
+                        Categoria: S{athlete?.category?.name} - Idade: {idade}
                       </span>
                     </figcaption>
                   </figure>
@@ -86,8 +89,8 @@ export function AthleteViewer({ drawerRef }: Props) {
                       className="w-12 h-12 px-0 py-0 bg-transparent fill-slate-400 hover:fill-red-500"
                     >
                       <svg
-                        width="25"
-                        height="25"
+                        width="26"
+                        height="26"
                         viewBox="0 0 30 30"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +133,7 @@ export function AthleteViewer({ drawerRef }: Props) {
               <ShowIf
                 as="section"
                 show={athlete?.mother.phone || athlete?.father.phone}
-                className="w-full px-5 mt-4 hidden desk:flex"
+                className="w-full px-5 mt-5 hidden desk:flex"
               >
                 <ShowIf as="div" show={athlete?.mother.phone} className="flex items-center gap-3">
                   <img src="/phone.svg" alt="telefone" />
@@ -149,88 +152,114 @@ export function AthleteViewer({ drawerRef }: Props) {
               </ShowIf>
 
               <ShowIf as="section" show={athlete?.certificateValidity.uri} className="w-full px-5 mt-8">
-                <h2 className="font-normal text-base text-primary">Atestado médico</h2>
+                <span className="font-semibold text-base text-primary">Atestado médico</span>
 
                 <div className="mt-4 flex items-center gap-4">
-                  <a
-                    href={`${import.meta.env.VITE_S3_URL}${athlete?.certificateValidity.uri}`}
-                    download={athlete?.certificateValidity.uri}
-                    className="w-12 h-12 flex flex-col items-center justify-center rounded-lg bg-primary font-bold text-white text-xs"
-                  >
-                    <span>DOC</span>
-                    <span>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M10 3.33337C7.425 3.33337 5.4 5.28962 5.11688 7.7865C4.57228 7.87425 4.06154 8.10762 3.63872 8.46189C3.2159 8.81617 2.89673 9.27817 2.715 9.799C1.1775 10.2421 0 11.6134 0 13.3334C0 15.4109 1.6725 17.0834 3.75 17.0834H16.25C18.3275 17.0834 20 15.4109 20 13.3334C20 12.2334 19.4656 11.2484 18.6912 10.5596C18.5462 8.36337 16.7944 6.61087 14.59 6.49712C13.8375 4.6665 12.1112 3.33337 10 3.33337ZM10 4.58337C11.7262 4.58337 13.1062 5.68962 13.5938 7.25837L13.7312 7.70837H14.375C16.0969 7.70837 17.5 9.1115 17.5 10.8334V11.1459L17.7537 11.3415C18.06 11.5762 18.3088 11.8775 18.4815 12.2226C18.6541 12.5677 18.7459 12.9475 18.75 13.3334C18.75 14.7559 17.6725 15.8334 16.25 15.8334H3.75C2.3275 15.8334 1.25 14.7559 1.25 13.3334C1.25 12.0709 2.15625 11.0909 3.3 10.8921L3.71062 10.814L3.78875 10.4027C3.97625 9.56087 4.7225 8.95837 5.625 8.95837H6.25V8.33337C6.25 6.22712 7.89375 4.58337 10 4.58337Z"
-                          fill="white"
-                        />
-                        <path
-                          d="M10.4502 14.154L10.0002 14.5834L9.5502 14.1552L7.0502 11.6552L7.95019 10.7552L9.3752 12.1815L9.37519 8.07962L10.6252 8.07962L10.6252 12.1815L12.0502 10.754L12.9502 11.654L10.4502 14.154Z"
-                          fill="white"
-                        />
-                      </svg>
-                    </span>
-                  </a>
+                  <DownloadButton uri={athlete?.certificateValidity.uri!} />
 
                   <div>
-                    <strong className="mb-2 font-semibold text-base text-back/80">Validade</strong>
+                    <strong className="font-semibold text-base text-back/80">Validade</strong>
                     <small className="text-base text-black/70">{athlete?.certificateValidity.date || 'não informado'}</small>
                   </div>
                 </div>
               </ShowIf>
 
-              <section className="w-full px-5 mt-8">
+              <section className="w-full px-5 mt-10">
                 <div className="w-full pb-3 border-b border-border-primary">
-                  <h2 className="font-semibold text-base text-primary">Dados pessoais</h2>
+                  <span className="font-semibold text-base text-primary">Documentos</span>
                 </div>
 
-                <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4">
-                  <div>
-                    <strong className="mb-2 font-semibold text-base text-back/80">Data de nascimento</strong>
-                    <small className="text-base text-black/70">{athlete?.birth.date}</small>
+                <div className="flex flex-col desk:flex-row desk:items-center justify-between gap-4">
+                  <div className="mt-4 flex items-center gap-4">
+                    <DownloadButton uri={athlete?.birth.uri!} />
+
+                    <div>
+                      <strong className="mb-1 font-semibold text-base text-back/80">Nascimento</strong>
+                      <small className="text-base text-black/70">{athlete?.birth.date}</small>
+                    </div>
                   </div>
 
-                  <div>
-                    <strong className="mb-2 font-semibold text-base text-back/80">RG</strong>
-                    <small className="text-base text-black/70">{athlete?.rg.value}</small>
+                  <div className="mt-4 flex items-center gap-4">
+                    <DownloadButton uri={athlete?.rg.uri!} />
+
+                    <div>
+                      <strong className="mb-1 font-semibold text-base text-back/80">RG</strong>
+                      <small className="text-base text-black/70">{athlete?.rg.value}</small>
+                    </div>
                   </div>
 
-                  <div>
-                    <strong className="mb-2 font-semibold text-base text-back/80">CPF</strong>
-                    <small className="text-base text-black/70">{athlete?.cpf.value}</small>
-                  </div>
+                  <div className="mt-4 flex items-center gap-4">
+                    <DownloadButton uri={athlete?.cpf.uri!} />
 
-                  <div>
-                    <strong className="mb-2 font-semibold text-base text-back/80">Categoria</strong>
-                    <small className="text-base text-black/70 capitalize">S{athlete?.category?.name}</small>
+                    <div>
+                      <strong className="mb-1 font-semibold text-base text-back/80">CPF</strong>
+                      <small className="text-base text-black/70">{athlete?.cpf.value}</small>
+                    </div>
                   </div>
                 </div>
 
-                <ShowIf as="div" show={athlete?.school.name} className="mt-7">
-                  <strong className="mb-2 font-semibold text-base text-back/80">Nome da escola</strong>
-                  <small className="text-base text-black/70 capitalize">
-                    {athlete?.school.name} - {athlete?.school.period}
-                  </small>
-                </ShowIf>
+                <div className="mt-4 flex flex-col gap-4">
+                  <div className="mt-4 flex items-center gap-4">
+                    <DownloadButton uri={athlete?.address.uri!} />
 
-                <ShowIf as="div" show={athlete?.isFederated.clubName} className="mt-7">
-                  <strong className="mb-2 font-semibold text-base text-back/80">Clube de federação</strong>
-                  <small className="text-base text-black/70">
-                    {athlete?.isFederated.clubName} - {athlete?.isFederated.date}
-                  </small>
-                </ShowIf>
+                    <div>
+                      <strong className="mb-1 font-semibold text-base text-back/80">Comprovante de residência</strong>
+                      <small className="text-base text-black/70">
+                        {athlete?.address.road}, {athlete?.address.number} - {athlete?.address.cep}
+                      </small>
+                    </div>
+                  </div>
+
+                  <ShowIf as="div" show={athlete?.school.name}>
+                    <div className="mt-4 flex items-center gap-4">
+                      <DownloadButton uri={athlete?.school.uri!} />
+
+                      <div>
+                        <strong className="mb-1 font-semibold text-base text-back/80">Escola</strong>
+                        <small className="text-base text-black/70 capitalize">
+                          {athlete?.school.name} - {athlete?.school.period}
+                        </small>
+                      </div>
+                    </div>
+                  </ShowIf>
+                </div>
               </section>
 
               <ShowIf
                 as="section"
                 show={athlete?.father.name || athlete?.father.phone || athlete?.mother.name || athlete?.mother.phone}
-                className="w-full px-5 mt-11"
+                className="w-full px-5 mt-7"
               >
                 <div className="w-full pb-3 border-b border-border-primary">
-                  <h2 className="font-normal text-base text-primary">Contato</h2>
+                  <span className="font-semibold text-base text-primary">Dados pessoais</span>
                 </div>
 
-                <ShowIf as="div" show={athlete?.father.name || athlete?.father.phone} className="mt-4 flex items-center">
+                <ShowIf
+                  as="div"
+                  show={athlete?.isFederated.clubName}
+                  className="mt-4 desk:mt-7 flex flex-col gap-5 desk:gap-0 desk:flex-row desk:items-center"
+                >
+                  <div className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">Clube de federação</strong>
+                    <small className="text-base text-black/70">{athlete?.isFederated.clubName}</small>
+                  </div>
+
+                  <div className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">Ano</strong>
+                    <small className="text-base text-black/70">{athlete?.isFederated.date}</small>
+                  </div>
+
+                  <div className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">Ultimo clube federado?</strong>
+                    <small className="text-base text-black/70">{athlete?.isFederated.lastClub ? 'Sim' : 'Não'}</small>
+                  </div>
+                </ShowIf>
+
+                <ShowIf
+                  as="div"
+                  show={athlete?.father.name || athlete?.father.phone || athlete?.father.cpf.value}
+                  className="mt-4 desk:mt-7 flex flex-col gap-5 desk:gap-0 desk:flex-row desk:items-center"
+                >
                   <ShowIf as="div" show={athlete?.father.name} className="flex-1">
                     <strong className="mb-2 font-semibold text-base text-back/80">Nome do pai</strong>
                     <small className="text-base text-black/70 capitalize">{athlete?.father.name}</small>
@@ -240,30 +269,51 @@ export function AthleteViewer({ drawerRef }: Props) {
                     <strong className="mb-2 font-semibold text-base text-back/80">Contato do pai</strong>
                     <small className="text-base text-black/70">{athlete?.father.phone}</small>
                   </ShowIf>
+
+                  <ShowIf as="div" show={athlete?.father.cpf.value} className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">CPF do pai</strong>
+                    <small className="text-base text-black/70">{athlete?.father.cpf.value}</small>
+                  </ShowIf>
                 </ShowIf>
 
-                <ShowIf as="div" show={athlete?.mother.name || athlete?.mother.phone} className="mt-7 flex items-center">
-                  <div className="flex-1">
+                <ShowIf
+                  as="div"
+                  show={athlete?.mother.name || athlete?.mother.phone || athlete?.mother.cpf.value}
+                  className="mt-4 desk:mt-7 flex flex-col gap-5 desk:gap-0 desk:flex-row desk:items-center"
+                >
+                  <ShowIf as="div" show={athlete?.mother.name} className="flex-1">
                     <strong className="mb-2 font-semibold text-base text-back/80">Nome da mãe</strong>
                     <small className="text-base text-black/70 capitalize">{athlete?.mother.name}</small>
-                  </div>
+                  </ShowIf>
 
-                  <div className="flex-1">
+                  <ShowIf as="div" show={athlete?.mother.phone} className="flex-1">
                     <strong className="mb-2 font-semibold text-base text-back/80">Contato da mãe</strong>
                     <small className="text-base text-black/70">{athlete?.mother.phone}</small>
-                  </div>
+                  </ShowIf>
+
+                  <ShowIf as="div" show={athlete?.mother.cpf.value} className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">CPF da mãe</strong>
+                    <small className="text-base text-black/70">{athlete?.mother.cpf.value}</small>
+                  </ShowIf>
+                </ShowIf>
+
+                <ShowIf as="div" show={athlete?.email} className="mt-7">
+                  <strong className="mb-2 font-semibold text-base text-back/80">Email</strong>
+                  <small className="text-base text-black/70">{athlete?.email}</small>
                 </ShowIf>
               </ShowIf>
 
-              <section className="w-full px-5 mt-11">
+              <section className="w-full px-5 mt-7">
                 <div className="w-full pb-3 border-b border-border-primary">
-                  <h2 className="font-semibold text-base text-primary">Endereço</h2>
+                  <span className="font-semibold text-base text-primary">Endereço</span>
                 </div>
 
                 <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4 desk:gap-0">
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Rua</strong>
-                    <small className="text-base text-black/70">{athlete?.address.road}</small>
+                    <small className="text-base text-black/70">
+                      {athlete?.address.road} capitão jose meireles - parque bitaru
+                    </small>
                   </div>
 
                   <div>
@@ -278,9 +328,29 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </div>
               </section>
 
-              <section className="w-full px-5 mt-11">
+              <section className="w-full px-5 mt-7">
                 <div className="w-full pb-3 border-b border-border-primary">
-                  <h2 className="font-semibold text-base text-primary">Situação Financeira</h2>
+                  <span className="font-semibold text-base text-primary">Saúde</span>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <div>
+                    <strong className="mb-2 font-semibold text-base text-back/80">Tem problemas de saúde?</strong>
+                    <small className="text-base text-black/70 capitalize">{athlete?.health.haveProblem ? 'Sim' : 'Não'}</small>
+                  </div>
+                </div>
+
+                <ShowIf as="div" show={athlete?.health.description} className="mt-4 flex items-center">
+                  <div className="flex-1">
+                    <strong className="mb-2 font-semibold text-base text-back/80">Descrição</strong>
+                    <small className="text-base text-black/70">{athlete?.health.description}</small>
+                  </div>
+                </ShowIf>
+              </section>
+
+              <section className="w-full px-5 mt-7">
+                <div className="w-full pb-3 border-b border-border-primary">
+                  <span className="font-semibold text-base text-primary">Situação Financeira</span>
                 </div>
 
                 <div className="mt-4 flex items-center justify-between">
@@ -290,7 +360,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                   </div>
                 </div>
 
-                <ShowIf as="div" show={athlete?.situation.observation} className="mt-7 flex items-center">
+                <ShowIf as="div" show={athlete?.situation.observation} className="mt-4 flex items-center">
                   <div className="flex-1">
                     <strong className="mb-2 font-semibold text-base text-back/80">Observação</strong>
                     <small className="text-base text-black/70">{athlete?.situation.observation}</small>

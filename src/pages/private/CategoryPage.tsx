@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { useAppSelector } from 'hooks/useAppSelector';
 import { Mode } from 'interfaces/mode';
 import { Category } from 'interfaces/category';
+import { checkChanges } from 'utils/checkChangesObject';
 
 const initialValues = {
   _id: '',
@@ -49,7 +50,15 @@ export function CategoryPage() {
   };
 
   const handleSubmit = (formikValues: typeof initialValues) => {
-    formikValues.mode === 'update' ? onUpdate(formikValues) : onCreate(formikValues);
+    const findCategory = categories?.find((category) => category._id == formikValues._id);
+    const nameExist = categories?.find((category) => category.name.toString() == formikValues.name.toString());
+
+    if (checkChanges({ ...findCategory, mode: formikValues.mode }, formikValues)) {
+      if (nameExist) toast.warn('Já existe uma categoria com esse nome!');
+      else formikValues.mode === 'update' ? onUpdate(formikValues) : onCreate(formikValues);
+    } else {
+      modalRef.current?.closeModal();
+    }
   };
 
   React.useEffect(() => {
@@ -59,11 +68,11 @@ export function CategoryPage() {
 
   return (
     <main className="w-full h-full overflow-y-auto ">
-      <header style={{ borderColor: '#DDDFE2' }} className="border-b">
-        <section style={{ maxWidth: '1016px' }} className="w-full h-full mx-auto">
-          <div className="w-full flex items-center justify-between pt-10 pb-7">
-            <div className="flex items-center">
-              <Link to="/home" className="absolute -left-12 mb-0.5">
+      <header style={{ borderColor: '#DDDFE2' }} className="desk:border-b">
+        <section style={{ maxWidth: '938px' }} className="w-full h-full mx-auto">
+          <div className="w-full pt-10 pb-7 px-5 desk:px-0 flex flex-col desk:flex-row items-center justify-between gap-5">
+            <div className="w-full desk:w-auto flex items-center justify-between">
+              <Link to="/home" className="desk:absolute desk:-left-12">
                 <svg width="36" height="31" viewBox="0 0 36 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M9.12418 15.5L8.56129 14.9715L8 15.5L8.56129 16.0285L9.12418 15.5ZM9.68706 16.0285L16.0473 10.057L14.9216 9L8.56129 14.9715L9.68706 16.0285ZM8.56129 16.0285L14.9216 22L16.0473 20.943L9.68706 14.9715L8.56129 16.0285ZM9.12418 16.2464L29 16.2464L29 14.7536L9.12418 14.7536L9.12418 16.2464Z"
@@ -72,26 +81,54 @@ export function CategoryPage() {
                 </svg>
               </Link>
 
-              <h1 className="font-changa font-semibold text-4xl text-black/70">Categorias</h1>
+              <h1 className="desk:font-changa font-semibold text-xl desk:text-4xl text-black/70 absolute left-1/2 -translate-x-1/2 desk:relative desk:left-0 desk:translate-x-0">
+                Categorias
+              </h1>
             </div>
 
             <ShowIf show={auth.type === 'admin'}>
-              <button type="button" onClick={openModal} className="px-6 py-2 bg-primary rounded-md mb-1">
+              <button type="button" onClick={openModal} className="px-6 py-2 bg-primary rounded-md mb-1 hidden desk:flex">
                 <span className="font-semibold text-white text-sm">Cadastrar nova categoria</span>
               </button>
             </ShowIf>
+
+            <button
+              type="button"
+              onClick={openModal}
+              className="box w-full pl-4 pr-4 py-4 items-center justify-between bg-white rounded-md mb-1 flex desk:hidden"
+            >
+              <div className="flex items-center gap-5">
+                <svg width="6" height="50" viewBox="0 0 6 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="6" height="50" rx="3" fill="#EE5253" />
+                </svg>
+
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium text-black/60 text-base normal-case">Pressione aqui para</span>
+                  <span className="font-medium text-black/80 text-[16px] normal-case">Cadastrar nova categoria</span>
+                </div>
+              </div>
+
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M15 21.25C15.3542 21.25 15.6513 21.13 15.8913 20.89C16.1313 20.65 16.2508 20.3533 16.25 20V16.25H20C20.3542 16.25 20.6513 16.13 20.8913 15.89C21.1313 15.65 21.2508 15.3533 21.25 15C21.25 14.6458 21.13 14.3488 20.89 14.1088C20.65 13.8688 20.3533 13.7492 20 13.75H16.25V10C16.25 9.64584 16.13 9.34875 15.89 9.10875C15.65 8.86875 15.3533 8.74917 15 8.75C14.6458 8.75 14.3488 8.87 14.1088 9.11C13.8688 9.35 13.7492 9.64667 13.75 10V13.75H10C9.64584 13.75 9.34875 13.87 9.10875 14.11C8.86875 14.35 8.74917 14.6467 8.75 15C8.75 15.3542 8.87 15.6513 9.11 15.8913C9.35 16.1313 9.64667 16.2508 10 16.25H13.75V20C13.75 20.3542 13.87 20.6513 14.11 20.8913C14.35 21.1313 14.6467 21.2508 15 21.25ZM6.25 26.25C5.5625 26.25 4.97375 26.005 4.48375 25.515C3.99375 25.025 3.74917 24.4367 3.75 23.75V6.25C3.75 5.5625 3.995 4.97375 4.485 4.48375C4.975 3.99375 5.56334 3.74917 6.25 3.75H23.75C24.4375 3.75 25.0263 3.995 25.5163 4.485C26.0063 4.975 26.2508 5.56334 26.25 6.25V23.75C26.25 24.4375 26.005 25.0263 25.515 25.5163C25.025 26.0063 24.4367 26.2508 23.75 26.25H6.25Z"
+                  fill="#EE5253"
+                />
+              </svg>
+            </button>
           </div>
 
-          <div className="flex gap-7">
-            <div className="px-2 pb-2 border-b-2 border-primary">
-              <span className="font-semibold text-black/70 text-sm">Todas categorias</span>
-            </div>
+          <div className="hidden gap-7 px-5 desk:px-0 desk:flex">
+            <span className="w-[59px] h-0.5 bg-primary absolute bottom-0 lef-5 desk:left-0 duration-200" />
+
+            <button type="button" className="px-1 pb-2">
+              <span className="font-semibold text-black/70 text-base">Todos</span>
+            </button>
           </div>
         </section>
       </header>
 
-      <section style={{ maxWidth: '1016px' }} className="w-full h-full pt-8 mx-auto flex flex-col">
-        <ul className="pb-20 grid grid-cols-5 gap-x-6 gap-y-8">
+      <section style={{ maxWidth: '938px' }} className="w-full h-full pt-0 desk:pt-8 mx-auto flex flex-col">
+        <ul className="pb-20 px-5 desk:px-0 grid grid-cols-1 desk:grid-cols-5 gap-x-6 gap-y-4 desk:gap-y-8">
           {categories?.map((category) => {
             const handleClickEdit = () => {
               openModal();
@@ -99,7 +136,7 @@ export function CategoryPage() {
             };
 
             return (
-              <li className="box bg-white rounded-lg">
+              <li key={category._id} className="box bg-white rounded-lg">
                 <div className="w-1.5 h-full bg-slate-300 rounded-l-lg absolute left-0 top-0" />
 
                 <ShowIf show={auth.type === 'admin'}>
@@ -123,7 +160,7 @@ export function CategoryPage() {
                   </button>
                 </ShowIf>
 
-                <div className="pt-9 pb-14 flex justify-center">
+                <div className="pt-9 pb-4 desk:pb-14 flex justify-center">
                   <span className="font-semibold text-4xl text-black/60">S</span>
                   <span className="number-category flex flex-col font-semibold text-4xl text-black/60">{category.name}</span>
                 </div>
@@ -164,7 +201,6 @@ export function CategoryPage() {
                       value={values.name}
                       error={errors.name}
                       required={true}
-                      placeholder="00"
                       inputMode="decimal"
                       autoFocus={true}
                       className="pl-[68px] py-8 desk:py-6 rounded-md text-black"

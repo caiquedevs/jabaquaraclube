@@ -79,7 +79,8 @@ export function authReducer(state = initialState, action: any) {
     }
 
     case authTypes.LOGIN_FAILURE: {
-      const newState = { ...initialState };
+      const newState = { ...state };
+      newState.loading.login = false;
       return newState;
     }
 
@@ -92,35 +93,55 @@ export function authReducer(state = initialState, action: any) {
 
     case authTypes.CHANGE_USER_REQUEST: {
       const newState = { ...state };
-
-      // if ('email' in action.payload.data) newState.loadingUpdateEmail = true;
-      // else if ('password' in action.payload.data) newState.loadingUpdatePassword = true;
-      // else if ('url' in action.payload.data) newState.loadingUpdateImage = true;
-      // else newState.loadingUpdateUserName = true;
-
+      newState.loading.update = true;
       return newState;
     }
 
     case authTypes.CHANGE_USER_SUCCESS: {
       const newState = { ...state };
 
-      // newState.loadingUpdateEmail = false;
-      // newState.loadingUpdatePassword = false;
-      // newState.loadingUpdateUserName = false;
-      // newState.loadingUpdateImage = false;
+      const users = newState.users?.map((user) => {
+        if (user._id === action.payload._id) user = action.payload;
+        return user;
+      });
 
-      newState.auth = { ...newState.auth, ...action.payload };
+      newState.users = users!;
+      newState.loading.update = false;
+      newState.loading.remove = false;
+
       return newState;
     }
 
     case authTypes.CHANGE_USER_FAILURE: {
       const newState = { ...state };
+      newState.loading.update = false;
+      newState.loading.remove = false;
+      return newState;
+    }
 
-      // newState.loadingUpdateEmail = false;
-      // newState.loadingUpdatePassword = false;
-      // newState.loadingUpdateUserName = false;
-      // newState.loadingUpdateImage = false;
+    case authTypes.REMOVE_REQUEST: {
+      const newState = { ...state };
+      newState.loading.remove = true;
+      return newState;
+    }
 
+    case authTypes.REMOVE_SUCCESS: {
+      const newState = { ...state };
+
+      const users = newState.users?.map((user) => {
+        if (user._id === action.payload._id) user.active = false;
+        return user;
+      });
+
+      newState.users = users!;
+      newState.loading.remove = false;
+
+      return newState;
+    }
+
+    case authTypes.REMOVE_FAILURE: {
+      const newState = { ...state };
+      newState.loading.remove = false;
       return newState;
     }
 
