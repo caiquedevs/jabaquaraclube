@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { getAge } from 'utils/getAge';
 import * as actionsAthlete from 'store/athlete/actions';
 import { DownloadButton } from 'components/atoms/DownloadButton';
+import { addressFormat } from 'utils/addressFormat';
 
 type Props = {
   drawerRef: React.RefObject<DrawerProps>;
@@ -77,11 +78,13 @@ export function AthleteViewer({ drawerRef }: Props) {
                         {athlete?.name} {athlete?.nickName ? `- (${athlete.nickName})` : ''}
                       </span>
                       <span className="mt-1 text-base text-black/60">
-                        Categoria: S{athlete?.category?.name} - Idade: {idade}
+                        {athlete?.category?.name ? `Categoria: S${athlete?.category?.name}` : null}{' '}
+                        {idade && !isNaN(Number(idade)) ? `Idade: ${idade}` : null}
                       </span>
                     </figcaption>
                   </figure>
 
+                  {/* Botoes de ação */}
                   <div className="flex items-center gap-2 mt-3 desk:mt-0">
                     <Button
                       type="button"
@@ -130,6 +133,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </header>
               </section>
 
+              {/* Contato dos pais */}
               <ShowIf
                 as="section"
                 show={athlete?.mother.phone || athlete?.father.phone}
@@ -151,6 +155,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </ShowIf>
               </ShowIf>
 
+              {/* Atestado médico */}
               <ShowIf as="section" show={athlete?.certificateValidity.uri} className="w-full px-5 mt-8">
                 <span className="font-semibold text-base text-primary">Atestado médico</span>
 
@@ -164,6 +169,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </div>
               </ShowIf>
 
+              {/* Documentos */}
               <section className="w-full px-5 mt-10">
                 <div className="w-full pb-3 border-b border-border-primary">
                   <span className="font-semibold text-base text-primary">Documentos</span>
@@ -204,9 +210,7 @@ export function AthleteViewer({ drawerRef }: Props) {
 
                     <div>
                       <strong className="mb-1 font-semibold text-base text-back/80">Comprovante de residência</strong>
-                      <small className="text-base text-black/70">
-                        {athlete?.address.road}, {athlete?.address.number} - {athlete?.address.cep}
-                      </small>
+                      <small className="text-base text-black/70">{addressFormat(athlete?.address)}</small>
                     </div>
                   </div>
 
@@ -225,6 +229,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </div>
               </section>
 
+              {/* Dados pessoais */}
               <ShowIf
                 as="section"
                 show={athlete?.father.name || athlete?.father.phone || athlete?.mother.name || athlete?.mother.phone}
@@ -303,6 +308,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </ShowIf>
               </ShowIf>
 
+              {/* Endereço */}
               <section className="w-full px-5 mt-7">
                 <div className="w-full pb-3 border-b border-border-primary">
                   <span className="font-semibold text-base text-primary">Endereço</span>
@@ -311,23 +317,22 @@ export function AthleteViewer({ drawerRef }: Props) {
                 <div className="mt-4 flex flex-col desk:flex-row desk:items-center justify-between gap-4 desk:gap-0">
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Rua</strong>
-                    <small className="text-base text-black/70">
-                      {athlete?.address.road} capitão jose meireles - parque bitaru
-                    </small>
+                    <small className="text-base text-black/70">{athlete?.address.road || 'Não informado'}</small>
                   </div>
 
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">Número</strong>
-                    <small className="text-base text-black/70">{athlete?.address.number}</small>
+                    <small className="text-base text-black/70">{athlete?.address.number || 'Não informado'}</small>
                   </div>
 
                   <div>
                     <strong className="mb-2 font-semibold text-base text-back/80">CEP</strong>
-                    <small className="text-base text-black/70">{athlete?.address.cep}</small>
+                    <small className="text-base text-black/70">{athlete?.address.cep || 'Não informado'}</small>
                   </div>
                 </div>
               </section>
 
+              {/* Saúde */}
               <section className="w-full px-5 mt-7">
                 <div className="w-full pb-3 border-b border-border-primary">
                   <span className="font-semibold text-base text-primary">Saúde</span>
@@ -348,6 +353,7 @@ export function AthleteViewer({ drawerRef }: Props) {
                 </ShowIf>
               </section>
 
+              {/* Situação Financeira */}
               <section className="w-full px-5 mt-7">
                 <div className="w-full pb-3 border-b border-border-primary">
                   <span className="font-semibold text-base text-primary">Situação Financeira</span>

@@ -35,7 +35,7 @@ type School = {
   file?: File;
 };
 
-type Address = {
+export type Address = {
   road: string;
   number: string;
   cep: string;

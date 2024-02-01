@@ -37,33 +37,33 @@ export function RegisterAthlete() {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('O Nome é obrigatório!'),
-    email: Yup.string().test('email', 'Email inválido', (value) => !value || validator.isEmail(value!)),
+    // email: Yup.string().test('email', 'Email inválido', (value) => !value || validator.isEmail(value!)),
 
-    rg: Yup.object().shape({
-      value: Yup.string().required('O RG é obrigatório!').min(12, 'RG inválido'),
-    }),
+    // rg: Yup.object().shape({
+    //   value: Yup.string().required('O RG é obrigatório!').min(12, 'RG inválido'),
+    // }),
 
-    cpf: Yup.object().shape({
-      value: Yup.string()
-        .required('O CPF é obrigatório!')
-        .test('cpf.value', 'CPF inválido.', (value) => isValidCPF(value!)),
-    }),
+    // cpf: Yup.object().shape({
+    //   value: Yup.string()
+    //     .required('O CPF é obrigatório!')
+    //     .test('cpf.value', 'CPF inválido.', (value) => isValidCPF(value!)),
+    // }),
 
-    birth: Yup.object().shape({
-      date: Yup.string()
-        .required('A Data de nascimento é obrigatório!')
-        .min(10, 'Data inválida')
-        .test('dateBirth', 'Data inválida', (value) => {
-          if (!value) return true;
-          const [day, month, year] = value?.split('/').map(Number);
-          const yearValid = year <= new Date().getFullYear();
-          return yearValid && isDateValid(value!);
-        }),
-    }),
+    // birth: Yup.object().shape({
+    //   date: Yup.string()
+    //     .required('A Data de nascimento é obrigatório!')
+    //     .min(10, 'Data inválida')
+    //     .test('dateBirth', 'Data inválida', (value) => {
+    //       if (!value) return true;
+    //       const [day, month, year] = value?.split('/').map(Number);
+    //       const yearValid = year <= new Date().getFullYear();
+    //       return yearValid && isDateValid(value!);
+    //     }),
+    // }),
 
-    category: Yup.object().shape({
-      _id: Yup.string().required('A Categoria é obrigatória!'),
-    }),
+    // category: Yup.object().shape({
+    //   _id: Yup.string().required('A Categoria é obrigatória!'),
+    // }),
 
     school: Yup.object().shape({
       period: Yup.string().test('school.period', 'Período inválido!', (value) => {
@@ -116,11 +116,11 @@ export function RegisterAthlete() {
       }),
     }),
 
-    address: Yup.object().shape({
-      road: Yup.string().required('A Rua é obrigatória!'),
-      number: Yup.string().required('O Número é obrigatório!'),
-      cep: Yup.string().required('O CEP é obrigatório!').min(9, 'CEP inválido'),
-    }),
+    // address: Yup.object().shape({
+    //   road: Yup.string().required('A Rua é obrigatória!'),
+    //   number: Yup.string().required('O Número é obrigatório!'),
+    //   cep: Yup.string().required('O CEP é obrigatório!').min(9, 'CEP inválido'),
+    // }),
   });
 
   const handleChangePhoto = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,9 +263,19 @@ export function RegisterAthlete() {
 
     formData.append('photo', values.photo.file!);
     formData.append('certificate', values.certificateValidity.file!);
+    formData.append('rg', values.rg.file!);
+    formData.append('cpf', values.cpf.file!);
+    formData.append('address', values.address.file!);
+    formData.append('school', values.school.file!);
+    formData.append('birth', values.birth.file!);
 
     delete values.photo.file;
     delete values.certificateValidity.file;
+    delete values.rg.file;
+    delete values.cpf.file;
+    delete values.address.file;
+    delete values.school.file;
+    delete values.birth.file;
 
     formData.append('data', JSON.stringify(values));
 

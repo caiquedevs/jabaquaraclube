@@ -72,7 +72,7 @@ export function HomePage() {
 
               <div className="flex flex-col gap-0.5">
                 <strong className="font-semibold text-lg desk:text-sm">Atletas</strong>
-                <small className="font-normal text-base desk:text-xs">Gerenciar atletas</small>
+                <small className="font-normal text-base desk:text-xs whitespace-nowrap">Gerenciar atletas</small>
               </div>
             </button>
           </li>
@@ -88,7 +88,7 @@ export function HomePage() {
 
               <div className="flex flex-col gap-0.5">
                 <strong className="font-semibold text-lg desk:text-sm">Categorias</strong>
-                <small className="font-normal text-base desk:text-xs">Gerenciar Categorias</small>
+                <small className="font-normal text-base desk:text-xs whitespace-nowrap">Gerenciar Categorias</small>
               </div>
             </button>
           </li>
@@ -104,7 +104,7 @@ export function HomePage() {
 
               <div className="flex flex-col gap-0.5">
                 <strong className="font-semibold text-lg desk:text-sm">Acessos</strong>
-                <small className="font-normal text-base desk:text-xs">Gerenciar Acessos</small>
+                <small className="font-normal text-base desk:text-xs whitespace-nowrap">Gerenciar Acessos</small>
               </div>
             </button>
           </li>
@@ -133,7 +133,7 @@ export function HomePage() {
 
               <div className="flex flex-col gap-0.5">
                 <strong className="font-semibold text-lg desk:text-sm">Sair</strong>
-                <small className="font-normal text-base desk:text-xs">Sair do sistema</small>
+                <small className="font-normal text-base desk:text-xs whitespace-nowrap">Sair do sistema</small>
               </div>
             </button>
           </li>

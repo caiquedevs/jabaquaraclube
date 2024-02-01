@@ -18,8 +18,8 @@ export const initialValuesAthlete: Athlete & Mode = {
     file: undefined,
   },
   category: {
-    _id: '',
-    name: '',
+    _id: undefined,
+    name: undefined,
   },
   rg: {
     value: '',
